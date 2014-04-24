@@ -1,0 +1,24 @@
+floorSize
+x z
+
+Walls
+count
+x1 z1 x2 z2
+
+enemies
+count
+x z
+# of increments in pattern
+startPt
+midPt
+endPt
+
+pickups
+count
+x z
+
+player
+x z
+
+exit
+x z
