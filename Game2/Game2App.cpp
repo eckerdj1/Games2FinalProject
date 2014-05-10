@@ -499,6 +499,16 @@ void Game2App::updateScene(float dt)
 	//target = Vector3(0.0f, 0.0f, 0.0f);
 	Vector3 lookAt(0.0f, 0.0f, 0.0f);
 
+	//	Exit the game
+	if (keyPressed(VK_ESCAPE))
+	{
+		exit(0);
+	}
+	//if (keyPressed(PauseKey))
+	//{
+	//	D3DApp::togglePause();
+	//}
+
 	if (gameState == TITLE) 
 	{
 		splashScreenIsUp = true;
@@ -714,8 +724,9 @@ void Game2App::updateScene(float dt)
 			level->reset();
 			numberOfSpotLights = level->spotLights.size();
 			mfxSpotCount->SetInt(numberOfSpotLights);
-			player.setPosition(level->playerLoc);
+			player.setPosition(level->playerLoc * level->enlargeByC);
 			playState.newLevel = false;
+			playState.pickUpsRemaining = level->pickups.size();
 		}
 		Vector3 oldPlayerPos = player.getPosition();
 		vector<Vector3> oldPerimeter;
@@ -1000,7 +1011,7 @@ void Game2App::drawScene()
 		player.setEffectVariables(mfxWVPVar, mfxWorldVar);
 		player.draw(mVP);
 	
-
+		D3DApp::setCursorShow(false);
 	//Drawing the level
 		if (level)
 		{

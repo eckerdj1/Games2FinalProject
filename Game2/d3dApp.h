@@ -45,9 +45,13 @@ public:
     Audio* getAudio()       {return audio;}
 	virtual LRESULT msgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
+	void setCursorShow(bool show);
+
 protected:
 	void initMainWindow();
 	void initDirect3D();
+
+	void togglePause();
 	
 protected:
 
@@ -58,6 +62,8 @@ protected:
 	bool      mMinimized;
 	bool      mMaximized;
 	bool      mResizing;
+
+	bool showCursor;
 
 	GameTimer mTimer;
 	Input* input;
@@ -81,6 +87,10 @@ protected:
 	D3DXCOLOR mClearColor;
 	int mClientWidth;
 	int mClientHeight;
+
+	RECT ScreenRect;
+	RECT MouseRect;
+
 };
 
 

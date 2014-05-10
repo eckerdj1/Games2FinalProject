@@ -9,6 +9,7 @@ LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static D3DApp* app = 0;
+	
 
 	switch( msg )
 	{
@@ -66,6 +67,7 @@ D3DApp::~D3DApp()
 	ReleaseCOM(md3dDevice);
 	ReleaseCOM(mFont);
 	SAFE_DELETE(audio);
+	//ReleaseCapture();
 }
 
 HINSTANCE D3DApp::getAppInst()
@@ -80,11 +82,23 @@ HWND D3DApp::getMainWnd()
 
 int D3DApp::run()
 {
+	//	SetCapture(mhMainWnd);
+
+
 	MSG msg = {0};
  
 	mTimer.reset();
 
 	audio->run();
+
+	RECT Win;
+	long xOffset, yOffset;
+	GetClientRect(mhMainWnd, &MouseRect);
+	GetWindowRect(mhMainWnd, &Win);
+	xOffset = (Win.right - Win.left - mClientWidth) / 2;
+	yOffset = (Win.bottom - Win.top - mClientHeight - xOffset);
+	OffsetRect(&MouseRect, Win.left + xOffset, Win.top + yOffset);
+	ClipCursor(&MouseRect);
 
 	while(msg.message != WM_QUIT)
 	{
@@ -114,6 +128,9 @@ void D3DApp::initApp()
 {
 	initMainWindow();
 	initDirect3D();
+
+	GetClipCursor(&ScreenRect);
+
 
 	D3DX10_FONT_DESC fontDesc;
 	fontDesc.Height          = 24;
@@ -200,6 +217,18 @@ void D3DApp::onResize()
 	vp.MaxDepth = 1.0f;
 
 	md3dDevice->RSSetViewports(1, &vp);
+
+	//GetClientRect(mhMainWnd, &MouseRect);
+
+	//long height = MouseRect.bottom - MouseRect.top;
+	//long width = MouseRect.right - MouseRect.left;
+
+	//long hChange = (height - mClientHeight);
+	//long wChange = (width - mClientWidth);
+	//long border = wChange / 2;
+
+	//InflateRect(&MouseRect, -wChange, -hChange);
+	//OffsetRect(&MouseRect, 0, hChange / 2);
 }
 
 void D3DApp::updateScene(float dt)
@@ -238,6 +267,10 @@ void D3DApp::drawScene()
 
 LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	RECT Win;
+	long yOffset;
+	long xOffset;
+
 	switch( msg )
 	{
 	// WM_ACTIVATE is sent when the window is activated or deactivated.  
@@ -246,14 +279,35 @@ LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_ACTIVATE:
 		if( LOWORD(wParam) == WA_INACTIVE )
 		{
+			ClipCursor(&ScreenRect);
 			mAppPaused = true;
 			mTimer.stop();
 		}
 		else
 		{
+			GetClientRect(mhMainWnd, &MouseRect);
+			GetWindowRect(mhMainWnd, &Win);
+			xOffset = (Win.right - Win.left - mClientWidth) / 2;
+			yOffset = (Win.bottom - Win.top - mClientHeight - xOffset);
+			OffsetRect(&MouseRect, Win.left + xOffset, Win.top + yOffset);
+			ClipCursor(&MouseRect);
 			mAppPaused = false;
 			mTimer.start();
 		}
+		return 0;
+
+	case WM_SETCURSOR:
+		GetClientRect(mhMainWnd, &MouseRect);
+		GetWindowRect(mhMainWnd, &Win);
+		xOffset = (Win.right - Win.left - mClientWidth) / 2;
+		yOffset = (Win.bottom - Win.top - mClientHeight - xOffset);
+		OffsetRect(&MouseRect, Win.left + xOffset, Win.top + yOffset);
+		if (!showCursor)
+		{
+			SetCursor(NULL);
+		}
+
+
 		return 0;
 
 	// WM_SIZE is sent when the user resizes the window.  
@@ -348,6 +402,8 @@ LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_KEYDOWN: case WM_SYSKEYDOWN:    // key down
 			input->keyDown(wParam);
+			if (wParam == 80)
+				togglePause();
 			return 0;
 
     case WM_KEYUP: case WM_SYSKEYUP:        // key up
@@ -504,4 +560,15 @@ void D3DApp::initDirect3D()
 	onResize();
 }
 
+void D3DApp::setCursorShow(bool show)
+{
+	showCursor = show;
+}
 
+void D3DApp::togglePause()
+{
+	if (mAppPaused)
+		mAppPaused = false;
+	else
+		mAppPaused = true;
+}

@@ -152,6 +152,9 @@
     <None Include="Game Over Screen.png" />
     <None Include="Game Win.png" />
     <None Include="How to Play.png" />
+    <None Include="level1.txt" />
+    <None Include="level2.txt" />
+    <None Include="level3.txt" />
     <None Include="lighthelper.fx" />
     <None Include="lighting.fx" />
     <None Include="LoadScreen.png" />

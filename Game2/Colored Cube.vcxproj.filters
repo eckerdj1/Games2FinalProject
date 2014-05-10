@@ -212,5 +212,14 @@
     <None Include="LoadScreen.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="level1.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="level2.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="level3.txt">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

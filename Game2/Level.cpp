@@ -144,6 +144,7 @@ void Level::fillLevel(string s) {
 		walls.push_back(*wall);
 		delete wall;
 	}
+	//	Enemy Count
 	fin >> count;
 	Enemy* enemy;
 	for (int i = 0; i < count; i++) {
