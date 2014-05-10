@@ -109,6 +109,7 @@
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="Text.cpp" />
+    <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="TileObject.cpp" />
     <ClCompile Include="Tower.cpp" />
     <ClCompile Include="Wall.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Text.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Score.h" />
+    <ClInclude Include="textureclass.h" />
     <ClInclude Include="TileObject.h" />
     <ClInclude Include="Tower.h" />
     <ClInclude Include="Vertex.h" />

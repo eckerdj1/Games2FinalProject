@@ -49,6 +49,10 @@ public:
 	bool colliding;
 	bool canStrafe;
 	bool hasWeapon;
+	bool teleporting;
+
+	float teleportCooldownCounter;
+	float teleportCooldown;
 
 private:
 	string name;

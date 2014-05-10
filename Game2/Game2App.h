@@ -11,6 +11,7 @@
 #include "Light.h"
 #include "Floor.h"
 #include "Level.h"
+#include "textureclass.h"
 
 #include <math.h>
 #include <ctime>
@@ -186,21 +187,13 @@ private:
 	ID3D10EffectTechnique* mTech;
 	ID3D10InputLayout* mVertexLayout;
 
-	ID3D10ShaderResourceView* mDiffuseMapRV;
-	ID3D10ShaderResourceView* mSpecMapRV;
+	TextureClass diffuseMap, specMap;
 
-	ID3D10ShaderResourceView* mFloorTex;
-	ID3D10ShaderResourceView* mFloorSpec;
-	
-	ID3D10ShaderResourceView* mTitleSplash;
-	ID3D10ShaderResourceView* mControlsSplash;
-	ID3D10ShaderResourceView* mHowToSplash;
-	ID3D10ShaderResourceView* mWinSplash;
-	ID3D10ShaderResourceView* mCreditsSplash;
-	ID3D10ShaderResourceView* mLoadSplash;
-	ID3D10ShaderResourceView* mGameOverSplash;
+	TextureClass floorTexMap, floorSpecMap;
 
-	ID3D10ShaderResourceView* mSplashSpec;
+	TextureClass titleSplash, controlsSplash, howToSplash, winSplash;
+	TextureClass creditsSplash, loadSplash, gameOverSplash, splashSpecMap;
+
 
 	ID3D10EffectShaderResourceVariable* mfxDiffuseMapVar;
 	ID3D10EffectShaderResourceVariable* mfxSpecMapVar;

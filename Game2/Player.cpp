@@ -22,6 +22,9 @@ Player::Player()
 	up = Vector3(0,1,0);
 	down = Vector3(0,-1,0);
 	zero = Vector3(0,0,0);
+	teleportCooldown = 2.0f;
+	teleportCooldownCounter = 0.0f;
+	teleporting = false;
 }
 
 Player::~Player()
@@ -183,6 +186,44 @@ void Player::update(float dt)
 	elapsed += dt;
 	lastMousePos = mousePos;
 	mousePos = Vector2(input->getMouseRawX(), input->getMouseRawY());
+
+	//	**********************************************************
+	//	Player direction code
+	float xDist = (float)(app->MousePos.x - app->PlayerPos.x);
+	float yDist = (float)(app->PlayerPos.y - app->MousePos.y);
+	//	First Person Mode follows Mouse Left/Right Movement
+	if (app->cameraMode == app->firstPerson)
+		dirTheta += float(mousePos.x) * dt;
+	//	Top-Down Mode aims player towards Mouse Position
+	if (app->cameraMode == app->topDown)
+	{
+		dirTheta = atan2(xDist, yDist);
+		dirTheta = dirTheta + app->camTheta;
+	}
+
+	direction.x = sinf(dirTheta);
+	direction.z = cosf(dirTheta);
+
+	//	***************************************************************
+	//	Teleportation Code
+	float distSquared = (xDist * xDist + yDist * yDist);
+	if (input->getMouseLButton() && !teleporting)
+	{
+		position += direction * sqrt(distSquared) / 2.5f;
+		teleporting = true;
+	}
+	if (teleporting)
+	{
+		teleportCooldownCounter += dt;
+		if (teleportCooldownCounter > teleportCooldown)
+		{
+			teleporting = false;
+			teleportCooldownCounter = 0.0f;
+		}
+	}
+
+	torso->setDirection(direction);
+	torso->setPosition(Vector3(position.x, position.y + height * 0.5f, position.z));
 	//Take care of input
 	//torso->setSpeed(0.0f);
 	bool moving = false;
@@ -240,24 +281,11 @@ void Player::update(float dt)
 			}
 		}
 	}
-	//	dirTheta += float(mousePos.x - lastMousePos.x)* 100.0f * dt;
-	if (app->cameraMode == app->firstPerson)
-		dirTheta += float(mousePos.x) * dt;
-	if (app->cameraMode == app->topDown)
-	{
-		dirTheta = atan2((float)(app->MousePos.x - app->PlayerPos.x), (float)(app->PlayerPos.y - app->MousePos.y));
-		dirTheta = dirTheta + app->camTheta;
-	}
-
+	
 	if (sprinting && moving && !colliding)
 		torso->setRotX(ToRadian(15));
 	else
 		torso->setRotX(ToRadian(0));
-
-	direction.x = sinf(dirTheta);
-	direction.z = cosf(dirTheta);
-	torso->setDirection(direction);
-	torso->setPosition(Vector3(position.x, position.y + height * 0.5f, position.z));
 
 
 	spotLight->pos = torso->getPosition() + direction * depth + Vector3(0, head->getPosition().y, 0);

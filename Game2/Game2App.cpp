@@ -86,41 +86,18 @@ void Game2App::initApp()
 	splashTarget = Vector3(0.0f, 200.0f, 200.0f);
 
 	//initialize texture resources
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"goon.jpg", 0, 0, &mDiffuseMapRV, 0 ));
-
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"defaultspec.dds", 0, 0, &mSpecMapRV, 0 ));
-
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"floor.jpg", 0, 0, &mFloorTex, 0 ));
-
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"floor.dds", 0, 0, &mFloorSpec, 0 ));
-	
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"Stealth Tactics Title Screen.png", 0, 0, &mTitleSplash, 0 ));
-	
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"Controls.png", 0, 0, &mControlsSplash, 0 ));
-	
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"LoadScreen.png", 0, 0, &mLoadSplash, 0 ));
-
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"How to Play.png", 0, 0, &mHowToSplash, 0 ));
-	
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"Credits.png", 0, 0, &mCreditsSplash, 0 ));
-
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"Game Win.png", 0, 0, &mWinSplash, 0 ));
-	
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"Game Over Screen.png", 0, 0, &mGameOverSplash, 0 ));
-	
-	HR(D3DX10CreateShaderResourceViewFromFile(md3dDevice, 
-		L"defaultspec.dds", 0, 0, &mSplashSpec, 0 ));
+	diffuseMap.Initialize(md3dDevice, L"goon.jpg");
+	specMap.Initialize(md3dDevice, L"defaultspec.dds");
+	floorTexMap.Initialize(md3dDevice, L"floor.jpg");
+	floorSpecMap.Initialize(md3dDevice, L"floor.dds");
+	titleSplash.Initialize(md3dDevice, L"Stealth Tactics Title Screen.png");
+	controlsSplash.Initialize(md3dDevice, L"Controls.png");
+	loadSplash.Initialize(md3dDevice, L"LoadScreen.png");
+	howToSplash.Initialize(md3dDevice, L"How to Play.png");
+	creditsSplash.Initialize(md3dDevice, L"Credits.png");
+	winSplash.Initialize(md3dDevice, L"Game Win.png");
+	gameOverSplash.Initialize(md3dDevice, L"Game Over Screen.png");
+	splashSpecMap.Initialize(md3dDevice, L"defaultSpec.dds");
 
 	wallDetectionIsOn = true;
 
@@ -759,8 +736,8 @@ void Game2App::drawScene()
 
 	// Set the resoure variables
 	
-	mfxDiffuseMapVar->SetResource(mDiffuseMapRV);
-	mfxSpecMapVar->SetResource(mSpecMapRV);
+	mfxDiffuseMapVar->SetResource(diffuseMap.GetTexture());
+	mfxSpecMapVar->SetResource(specMap.GetTexture());
 
 	// Set the texture matrix
 	D3DXMATRIX texMtx;
@@ -790,8 +767,8 @@ void Game2App::drawScene()
 		}
 
 		mfxTexVar->SetInt(1);
-		mfxDiffuseMapVar->SetResource(mFloorTex);
-		mfxSpecMapVar->SetResource(mFloorSpec);
+		mfxDiffuseMapVar->SetResource(floorTexMap.GetTexture());
+		mfxSpecMapVar->SetResource(floorSpecMap.GetTexture());
 		floor.setMTech(mTech);
 		mfxWVPVar->SetMatrix(floor.getWorldMatrix() * mVP);
 		mfxWorldVar->SetMatrix(floor.getWorldMatrix());
@@ -802,25 +779,25 @@ void Game2App::drawScene()
 	//Draw splash screen
 	if (gameState == TITLE)
 	{
-		mfxDiffuseMapVar->SetResource(mTitleSplash);
+		mfxDiffuseMapVar->SetResource(titleSplash.GetTexture());
 	}
 	if (gameState == LOADING)
 	{
-		mfxDiffuseMapVar->SetResource(mLoadSplash);
+		mfxDiffuseMapVar->SetResource(loadSplash.GetTexture());
 	}
 	if (gameState == GAMEWIN)
 	{
-		mfxDiffuseMapVar->SetResource(mWinSplash);
+		mfxDiffuseMapVar->SetResource(winSplash.GetTexture());
 	}
 	if (gameState == HOWTO)
 	{
-		mfxDiffuseMapVar->SetResource(mHowToSplash);
+		mfxDiffuseMapVar->SetResource(howToSplash.GetTexture());
 	}
 		//Identity(&mVP);
 	if (gameState != PLAY)
 	{
 		mfxTexVar->SetInt(1);
-		mfxSpecMapVar->SetResource(mSplashSpec);
+		mfxSpecMapVar->SetResource(splashSpecMap.GetTexture());
 		Scale(&texMtx, 1.0f, 1.0f, 1.0f);
 		mfxTexMtxVar->SetMatrix((float*)&texMtx);
 		for(UINT p = 0; p < techDesc.Passes; ++p)
