@@ -240,11 +240,14 @@ void Player::update(float dt)
 			}
 		}
 	}
-	//dirTheta += float(mousePos.x - lastMousePos.x)* 100.0f * dt;
+	//	dirTheta += float(mousePos.x - lastMousePos.x)* 100.0f * dt;
 	if (app->cameraMode == app->firstPerson)
 		dirTheta += float(mousePos.x) * dt;
 	if (app->cameraMode == app->topDown)
+	{
 		dirTheta = atan2((float)(app->MousePos.x - app->PlayerPos.x), (float)(app->PlayerPos.y - app->MousePos.y));
+		dirTheta = dirTheta + app->camTheta;
+	}
 
 	if (sprinting && moving && !colliding)
 		torso->setRotX(ToRadian(15));

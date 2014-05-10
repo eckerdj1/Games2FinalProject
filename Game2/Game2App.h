@@ -88,6 +88,13 @@ public:
 	int cameraMode;
 	int firstPerson;
 	int topDown;
+	
+	float camTheta;
+	float camPhi;
+	float camTurnSpeed;
+	float camZoom;
+	float zoomSpeed;
+	float maxZoom, minZoom;
 
 private:
 	void buildFX();
@@ -226,12 +233,6 @@ private:
 	Vector3 splashCamPos;
 	Vector3 splashPos;
 	Vector3 splashTarget;
-	float camTheta;
-	float camPhi;
-	float camTurnSpeed;
-	float camZoom;
-	float zoomSpeed;
-	float maxZoom, minZoom;
 	Vector2 mousePos, lastMousePos;
 
 	//my edits

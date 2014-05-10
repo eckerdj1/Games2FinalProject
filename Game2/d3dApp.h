@@ -50,6 +50,8 @@ public:
 	POINT MousePos;
 	POINT PlayerPos;
 
+	HCURSOR hCurs3; 
+
 protected:
 	void initMainWindow();
 	void initDirect3D();
