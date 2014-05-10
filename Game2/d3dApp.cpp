@@ -41,6 +41,9 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	mMaximized  = false;
 	mResizing   = false;
 
+	mouseCaptured = true;
+	normalCursor = LoadCursor(0, IDC_ARROW);
+
 	mFrameStats = L"";
  
 	md3dDevice          = 0;
@@ -91,6 +94,7 @@ int D3DApp::run()
 
 	audio->run();
 
+
 	RECT Win;
 	long xOffset, yOffset;
 	GetClientRect(mhMainWnd, &MouseRect);
@@ -129,7 +133,8 @@ void D3DApp::initApp()
 	initMainWindow();
 	initDirect3D();
 
-	GetClipCursor(&ScreenRect);
+	DesktopWindow = GetDesktopWindow();
+	GetWindowRect(DesktopWindow, &ScreenRect);
 
 
 	D3DX10_FONT_DESC fontDesc;
@@ -404,6 +409,8 @@ LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			input->keyDown(wParam);
 			if (wParam == 80)
 				togglePause();
+			if (wParam == CaptureMouseKey)
+				toggleMouseCapture();
 			return 0;
 
     case WM_KEYUP: case WM_SYSKEYUP:        // key up
@@ -563,6 +570,10 @@ void D3DApp::initDirect3D()
 void D3DApp::setCursorShow(bool show)
 {
 	showCursor = show;
+	if (showCursor)
+		SetCursor(normalCursor);
+	else
+		SetCursor(NULL);
 }
 
 void D3DApp::togglePause()
@@ -571,4 +582,27 @@ void D3DApp::togglePause()
 		mAppPaused = false;
 	else
 		mAppPaused = true;
+}
+
+void D3DApp::toggleMouseCapture()
+{
+	RECT Win;
+	long xOffset, yOffset;
+	if (mouseCaptured)
+	{
+		ClipCursor(&ScreenRect);
+		mouseCaptured = false;
+		setCursorShow(true);
+	}
+	else
+	{
+		GetClientRect(mhMainWnd, &MouseRect);
+		GetWindowRect(mhMainWnd, &Win);
+		xOffset = (Win.right - Win.left - mClientWidth) / 2;
+		yOffset = (Win.bottom - Win.top - mClientHeight - xOffset);
+		OffsetRect(&MouseRect, Win.left + xOffset, Win.top + yOffset);
+		ClipCursor(&MouseRect);
+		mouseCaptured = true;
+		setCursorShow(false);
+	}
 }

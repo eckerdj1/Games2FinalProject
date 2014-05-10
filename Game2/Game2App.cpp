@@ -94,6 +94,8 @@ public:
 	void updateScene(float dt);
 	void drawScene(); 
 
+	void showSplash();
+
 private:
 	void buildFX();
 	void buildVertexLayouts();
@@ -511,7 +513,7 @@ void Game2App::updateScene(float dt)
 
 	if (gameState == TITLE) 
 	{
-		splashScreenIsUp = true;
+		showSplash();
 		//change camera, to point at splash quad
 		splash.setPosition(splashPos);
 		//splash.setRotXAngle(6.28f);
@@ -526,7 +528,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == HOWTO) 
 	{
 		//change texture on splash to "how to" 	bool toLoading = false;
-		splashScreenIsUp = true;
+		showSplash();
 		bool toLoading = false;
 		switch(playState.level)
 		{
@@ -553,7 +555,7 @@ void Game2App::updateScene(float dt)
 	} 
 	else if (gameState == LEVELWIN) 
 	{
-		splashScreenIsUp = true;
+		showSplash();
 		playState.level += 1;
 		playState.livesRemaining = 3;
 		playState.newLevel = true;
@@ -590,20 +592,17 @@ void Game2App::updateScene(float dt)
 	}
 	else if (gameState == GAMEWIN) 
 	{
-		splashScreenIsUp = true;
+		showSplash();
 		timer += dt;
-		activeMessage = true;
-		message = L"You won!";
 		if (timer > 5.0f)
 		{
-			activeMessage = false;
 			timer = 0.0f;
 			gameState = CREDITS;
 		}
 	}
 	else if (gameState == GAMEOVER) 
 	{
-		splashScreenIsUp = true;
+		showSplash();
 		// change camera to point at game over quad
 		timer += dt;
 		activeMessage = true;
@@ -618,7 +617,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == CREDITS) 
 	{
 		//display the Credits Splash screen
-		splashScreenIsUp = true;
+		showSplash();
 		playState.level = 1;
 		playState.newLevel = true;
 		playState.livesRemaining = 3;
@@ -650,9 +649,7 @@ void Game2App::updateScene(float dt)
 	} 
 	else if (gameState == LOADING)
 	{
-		splashScreenIsUp = true;
-		camPos = splashCamPos;
-		target = splashTarget;
+		showSplash();
 		if (playState.level == 1)
 		{
 			if (!level1)
@@ -1011,7 +1008,7 @@ void Game2App::drawScene()
 		player.setEffectVariables(mfxWVPVar, mfxWorldVar);
 		player.draw(mVP);
 	
-		D3DApp::setCursorShow(false);
+		//D3DApp::setCursorShow(false);
 	//Drawing the level
 		if (level)
 		{
@@ -1042,6 +1039,10 @@ void Game2App::drawScene()
 	if (gameState == LOADING)
 	{
 		mfxDiffuseMapVar->SetResource(mLoadSplash);
+	}
+	if (gameState == GAMEWIN)
+	{
+		mfxDiffuseMapVar->SetResource(mWinSplash);
 	}
 		//Identity(&mVP);
 	if (gameState != PLAY)
@@ -1214,4 +1215,11 @@ bool Box2::intersect(const Ray &r, float t0, float t1){
 	if (tzmax < tmax)
 		tmax = tzmax;
 	return ( (tmin < t1) && (tmax > t0) );
+}
+
+void Game2App::showSplash()
+{
+	splashScreenIsUp = true;
+	camPos = splashCamPos;
+	target = splashTarget;
 }

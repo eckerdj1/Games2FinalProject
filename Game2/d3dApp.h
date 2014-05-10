@@ -52,6 +52,11 @@ protected:
 	void initDirect3D();
 
 	void togglePause();
+	void toggleMouseCapture();
+
+	bool mouseCaptured;
+
+	HCURSOR normalCursor;
 	
 protected:
 
@@ -90,6 +95,9 @@ protected:
 
 	RECT ScreenRect;
 	RECT MouseRect;
+
+	HWND DesktopWindow;
+	HWND MyWindow;
 
 };
 

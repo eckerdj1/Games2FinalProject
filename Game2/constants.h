@@ -59,6 +59,7 @@ const UCHAR PlayerJumpKey		= VK_SPACE;
 const UCHAR PlayerSprintKey		= VK_LSHIFT;
 const UCHAR FirstPersonKey		= 0x31;		// 1
 const UCHAR TopDownKey			= 0x32;		// 2
+const UCHAR CaptureMouseKey		= VK_F10;	// F10
 
 //-----------------------------------------------
 //                  Constants
