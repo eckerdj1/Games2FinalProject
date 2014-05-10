@@ -16,6 +16,7 @@ using std::string;
 
 class BodyPart;
 class Body;
+class Game2App;
 
 class Player : public Body {
 public:
@@ -24,6 +25,7 @@ public:
 
 	void init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* device, Light* light);
 	void buildBody();
+	void attachApp(Game2App* _app);
 
 	void attachBox(Box* box);
 
@@ -46,6 +48,7 @@ public:
 public:
 	bool colliding;
 	bool canStrafe;
+	bool hasWeapon;
 
 private:
 	string name;
@@ -57,6 +60,8 @@ private:
 	Vector3 direction;
 	Light* spotLight;
 	Vector2 mousePos, lastMousePos;
+
+	Game2App* app;
 
 	Box* b;
 

@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Game2App.h"
 
 Player::Player()
 {
@@ -115,24 +116,24 @@ void Player::buildBody()
 	Vector3 raPos = position;
 	Vector3 torsoSize = torso->getSize();
 	raPos += Vector3(width * 0.65f, torsoSize.y * 0.8f, 0);
-	rightArm->init("rightArm", b, raPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
+	rightArm->init("rightArm", b, raPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
 	rightArm->setBody(this);
 	rightArm->setRoot(torso);
 	//	right forearm
-	Vector3 rfaPos(0, height * 0.29f, 0);
-	rightForearm->init("rightForearm", b, rfaPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
+	Vector3 rfaPos(0, height * 0.225f, 0);
+	rightForearm->init("rightForearm", b, rfaPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
 	rightForearm->setBody(this);
 	rightForearm->setRoot(rightArm);
 
 	// left arm
 	Vector3 laPos = position;
 	laPos += Vector3(width * -0.65f, torsoSize.y * 0.8f, 0);
-	leftArm->init("leftArm", b, laPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
+	leftArm->init("leftArm", b, laPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
 	leftArm->setBody(this);
 	leftArm->setRoot(torso);
 	//	left forearm
-	Vector3 lfaPos(0, height * 0.29f, 0);
-	leftForearm->init("leftForearm", b, lfaPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
+	Vector3 lfaPos(0, height * 0.225f, 0);
+	leftForearm->init("leftForearm", b, lfaPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
 	leftForearm->setBody(this);
 	leftForearm->setRoot(leftArm);
 
@@ -170,6 +171,8 @@ void Player::buildBody()
 	torso->addChild(leftArm);
 	torso->addChild(rightLeg);
 	torso->addChild(leftLeg);
+	rightArm->addChild(rightForearm);
+	leftArm->addChild(leftForearm);
 	rightLeg->addChild(rightShin);
 	leftLeg->addChild(leftShin);
 }
@@ -238,7 +241,10 @@ void Player::update(float dt)
 		}
 	}
 	//dirTheta += float(mousePos.x - lastMousePos.x)* 100.0f * dt;
-	dirTheta += float(mousePos.x) * dt;
+	if (app->cameraMode == app->firstPerson)
+		dirTheta += float(mousePos.x) * dt;
+	if (app->cameraMode == app->topDown)
+		dirTheta = atan2((float)(app->MousePos.x - app->PlayerPos.x), (float)(app->PlayerPos.y - app->MousePos.y));
 
 	if (sprinting && moving && !colliding)
 		torso->setRotX(ToRadian(15));
@@ -307,42 +313,63 @@ void Player::update(float dt)
 		//height /= 1.01f;
 	}
 	
-	//	arm movement
+	//	arm movement with no weapons
 	// rotate arms down
+	normPos = 180;
+	phase = 0;
+	float armRot = 0;
+	float armRange = 0;
+	float armOffset = 0;
+	float normForearmPos = -20;
+	float forearmRot = sin(elapsed * limbSpeed + phase);
+	float forearmRange = 0;
+	float forearmOffset = 0;
 	rightArm->setRotX(ToRadian(180));
 	leftArm->setRotX(ToRadian(180));
-	rightForearm->setRotX(ToRadian(170));
-	leftForearm->setRotX(ToRadian(170));
+	rightForearm->setRotX(ToRadian(-20));
+	leftForearm->setRotX(ToRadian(-20));
 	if (!colliding)
 	{
 		if (moving && !sprinting)
 		{	//swing arms back and forth if moving
-			float normPos = 180;
-			float armRot = sin(elapsed * limbSpeed);
-			float armRange = 10;
-			rightArm->setRotX(ToRadian(normPos + (armRot * armRange)));
-			leftArm->setRotX(ToRadian(normPos + (-armRot * armRange)));
+			armRot = sin(elapsed * limbSpeed);
+			armRange = 10;
+			armOffset = 0;
+			phase = 0.0f;
+			forearmRot = sin(elapsed * limbSpeed + phase);
+			forearmRange = 20;
+			forearmOffset = 10;
 		}
 		else if (moving && sprinting)
 		{
-			float normPos = 180;
-			float armRot = sin(elapsed * limbSpeed);
-			float armRange = 30;
-			float armOffset = 10;
-			rightArm->setRotX(ToRadian(normPos + (armRot * armRange) + armOffset));
-			leftArm->setRotX(ToRadian(normPos + (-armRot * armRange) + armOffset));
+			armRot = sin(elapsed * limbSpeed);
+			armRange = 30;
+			armOffset = 10;
+			phase = 0.0f;
+			forearmRot = sin(elapsed * limbSpeed + phase);
+			forearmRange = 50;
+			forearmOffset = 20;
 		}
 		else
 		{	//move arms by side if not moving
-			rightArm->setRotX(ToRadian(180));
-			leftArm->setRotX(ToRadian(180));
+			armRot = 0;
+			armRange = 0;
+			armOffset = 0;
 		}
 	}
+
+	rightArm->setRotX(ToRadian(normPos + (armRot * armRange) + armOffset));
+	leftArm->setRotX(ToRadian(normPos + (-armRot * armRange) + armOffset));
+	
+	rightForearm->setRotX(ToRadian(normForearmPos + (forearmRot * forearmRange) - forearmOffset));
+	leftForearm->setRotX(ToRadian(normForearmPos + (-forearmRot * forearmRange) - forearmOffset));
 
 	//Update the bodyparts
 	head->update(dt);
 	rightArm->update(dt);
 	leftArm->update(dt);
+	rightForearm->update(dt);
+	leftForearm->update(dt);
 	rightLeg->update(dt);
 	leftLeg->update(dt);
 	rightShin->update(dt);
@@ -385,4 +412,9 @@ void Player::setDiffuseMap(ID3D10EffectShaderResourceVariable* var)
 
 void Player::setLightingVar(Light* light) {
 	spotLight = light;
+}
+
+void Player::attachApp(Game2App* _app)
+{
+	app = _app;
 }

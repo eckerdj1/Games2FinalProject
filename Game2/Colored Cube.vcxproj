@@ -124,6 +124,7 @@
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Floor.h" />
+    <ClInclude Include="Game2App.h" />
     <ClInclude Include="gameError.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameTimer.h" />

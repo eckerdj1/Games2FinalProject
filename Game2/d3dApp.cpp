@@ -423,6 +423,11 @@ LRESULT D3DApp::msgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
     case WM_MOUSEMOVE:                      // mouse moved
         input->mouseIn(lParam);
+		GetCursorPos(&MousePos);
+		MousePos.x = MousePos.x - MouseRect.left;
+		MousePos.y = MousePos.y - MouseRect.top;
+		PlayerPos.x = (MouseRect.right - MouseRect.left) / 2;
+		PlayerPos.y = (MouseRect.bottom - MouseRect.top) / 2;
         return 0;
 
     case WM_INPUT:                          // raw mouse data in

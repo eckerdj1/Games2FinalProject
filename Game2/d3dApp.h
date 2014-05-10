@@ -47,6 +47,9 @@ public:
 
 	void setCursorShow(bool show);
 
+	POINT MousePos;
+	POINT PlayerPos;
+
 protected:
 	void initMainWindow();
 	void initDirect3D();
@@ -95,6 +98,8 @@ protected:
 
 	RECT ScreenRect;
 	RECT MouseRect;
+
+	
 
 	HWND DesktopWindow;
 	HWND MyWindow;
