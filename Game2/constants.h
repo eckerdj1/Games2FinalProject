@@ -60,13 +60,14 @@ const UCHAR PlayerSprintKey		= VK_LSHIFT;
 const UCHAR FirstPersonKey		= 0x31;		// 1
 const UCHAR TopDownKey			= 0x32;		// 2
 const UCHAR CaptureMouseKey		= VK_F10;	// F10
+const UCHAR	AdvanceScreenKey	= VK_SPACE; 
 
 //-----------------------------------------------
 //                  Constants
 //-----------------------------------------------
 // window
 const char CLASS_NAME[] = "ColoredCubeApp";
-const char GAME_TITLE[] = "Falling";
+const char GAME_TITLE[] = "Stealth Tactic";
 const bool FULLSCREEN = false;          // windowed or fullscreen
 const UINT GAME_WIDTH = 640;			// width of game in pixels
 const UINT GAME_HEIGHT = 480;			// height of game in pixels

@@ -522,36 +522,41 @@ void Game2App::updateScene(float dt)
 		camPos = splashCamPos;
 
 		
-		if (gameTime > 7.0f || keyPressed(VK_RETURN))
+		if (gameTime > 7.0f || keyPressed(AdvanceScreenKey))
 			gameState = HOWTO;
 	}
 	else if (gameState == HOWTO) 
 	{
 		//change texture on splash to "how to" 	bool toLoading = false;
 		showSplash();
+		timer += dt;
 		bool toLoading = false;
-		switch(playState.level)
+		if (timer > 15.0f || keyPressed(AdvanceScreenKey))
 		{
-		case 1:
-			if (level1 == 0)
-				toLoading = true;
-			break;
-		case 2:
-			if (level2 == 0)
-				toLoading = true;
-			break;
-		case 3:
-			if (level3 == 0)
-				toLoading = true;
-			break;
+			switch(playState.level)
+			{
+			case 1:
+				if (level1 == 0)
+					toLoading = true;
+				break;
+			case 2:
+				if (level2 == 0)
+					toLoading = true;
+				break;
+			case 3:
+				if (level3 == 0)
+					toLoading = true;
+				break;
+			}
+			if (toLoading)
+			{
+				gameState = LOADING;
+				splashScreenIsUp = true;
+			}
+			else 
+				gameState = PLAY;
+			timer = 0.0f;
 		}
-		if (toLoading)
-		{
-			gameState = LOADING;
-			splashScreenIsUp = true;
-		}
-		else 
-			gameState = PLAY;
 	} 
 	else if (gameState == LEVELWIN) 
 	{
@@ -594,7 +599,7 @@ void Game2App::updateScene(float dt)
 	{
 		showSplash();
 		timer += dt;
-		if (timer > 5.0f)
+		if (timer > 5.0f || keyPressed(AdvanceScreenKey))
 		{
 			timer = 0.0f;
 			gameState = CREDITS;
@@ -967,6 +972,7 @@ void Game2App::drawScene()
 		mfxSplashLight->SetRawValue(&splashLight, 0, sizeof(Light));
 		mfxAmbientVar->SetRawValue(&splashLight, 0, sizeof(Light));
 		mfxSplashLightVar->SetInt(1);
+		showSplash();
 	}
 	mfxLightType->SetInt(lightType);
 
@@ -1043,6 +1049,10 @@ void Game2App::drawScene()
 	if (gameState == GAMEWIN)
 	{
 		mfxDiffuseMapVar->SetResource(mWinSplash);
+	}
+	if (gameState == HOWTO)
+	{
+		mfxDiffuseMapVar->SetResource(mHowToSplash);
 	}
 		//Identity(&mVP);
 	if (gameState != PLAY)

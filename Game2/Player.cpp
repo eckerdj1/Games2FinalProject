@@ -90,6 +90,8 @@ void Player::buildBody()
 	head = new BodyPart();
 	rightArm = new BodyPart();
 	leftArm = new BodyPart();
+	rightForearm = new BodyPart();
+	leftForearm = new BodyPart();
 	rightLeg = new BodyPart();
 	leftLeg = new BodyPart();
 	rightShin = new BodyPart();
@@ -113,16 +115,26 @@ void Player::buildBody()
 	Vector3 raPos = position;
 	Vector3 torsoSize = torso->getSize();
 	raPos += Vector3(width * 0.65f, torsoSize.y * 0.8f, 0);
-	rightArm->init("rightArm", b, raPos, direction, Vector3(width * 0.2f, height * 0.37f, depth * 0.5f), speed);
+	rightArm->init("rightArm", b, raPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
 	rightArm->setBody(this);
 	rightArm->setRoot(torso);
+	//	right forearm
+	Vector3 rfaPos(0, height * 0.29f, 0);
+	rightForearm->init("rightForearm", b, rfaPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
+	rightForearm->setBody(this);
+	rightForearm->setRoot(rightArm);
 
 	// left arm
 	Vector3 laPos = position;
 	laPos += Vector3(width * -0.65f, torsoSize.y * 0.8f, 0);
-	leftArm->init("leftArm", b, laPos, direction, Vector3(width * 0.2f, height * 0.37f, depth * 0.5f), speed);
+	leftArm->init("leftArm", b, laPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
 	leftArm->setBody(this);
 	leftArm->setRoot(torso);
+	//	left forearm
+	Vector3 lfaPos(0, height * 0.29f, 0);
+	leftForearm->init("leftForearm", b, lfaPos, direction, Vector3(width * 0.2f, height * 0.27f, depth * 0.5f), speed);
+	leftForearm->setBody(this);
+	leftForearm->setRoot(leftArm);
 
 	// right leg
 	Vector3 rlPos = position;
@@ -299,6 +311,8 @@ void Player::update(float dt)
 	// rotate arms down
 	rightArm->setRotX(ToRadian(180));
 	leftArm->setRotX(ToRadian(180));
+	rightForearm->setRotX(ToRadian(170));
+	leftForearm->setRotX(ToRadian(170));
 	if (!colliding)
 	{
 		if (moving && !sprinting)
