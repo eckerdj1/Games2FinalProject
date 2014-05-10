@@ -51,7 +51,7 @@ private:
 	string name;
 	BodyPart* torso;
 	BodyPart* head;
-	BodyPart *rightArm, *leftArm;
+	BodyPart *rightArm, *leftArm, *rightForearm, *leftForearm;
 	BodyPart *rightLeg, *leftLeg, *rightShin, *leftShin;
 	Vector3 position;
 	Vector3 direction;
