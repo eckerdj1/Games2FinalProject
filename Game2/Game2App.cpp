@@ -535,16 +535,12 @@ void Game2App::updateScene(float dt)
 				}
 			}
 		}
-		if(spotted) {
-			spotCounter += dt;
+		if(spotted && spotCounter == 0) {
+			spotCounter += 2.0f;
 			audio->playCue(ALARM);
-			if (spotCounter > 0.22f)	
-			{
-				//playState.livesRemaining--;
-				spotCounter = 0.0f;
-			}
+			//playState.livesRemaining--;
 		}
-		spotCounter -= dt * 0.5f;
+		spotCounter -= dt;
 		if (spotCounter < 0.0f)
 			spotCounter = 0.0f;
 
