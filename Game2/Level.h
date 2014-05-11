@@ -59,6 +59,7 @@ public:
 	Level(ID3D10Device* device); 
 
 	void fillLevel(string s);
+	void fillAltLevel(string s);
 	void update(float dt);
 	void draw(Matrix mVP);
 	void setMTech(ID3D10EffectTechnique* tech) { mTech = tech; }
