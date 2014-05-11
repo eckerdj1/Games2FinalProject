@@ -25,6 +25,7 @@ Player::Player()
 	teleportCooldown = 2.0f;
 	teleportCooldownCounter = 0.0f;
 	teleporting = false;
+	teleportFloat = 2.5f;
 }
 
 Player::~Player()
@@ -209,7 +210,11 @@ void Player::update(float dt)
 	float distSquared = (xDist * xDist + yDist * yDist);
 	if (input->getMouseLButton() && !teleporting)
 	{
-		position += direction * sqrt(distSquared) / 2.5f;
+		position += direction * sqrt(distSquared) / teleportFloat;
+		for (int i=0; i<perimeter.size(); ++i)
+		{
+			perimeter[i] += direction * sqrt(distSquared) / teleportFloat;
+		}
 		teleporting = true;
 	}
 	if (teleporting)
@@ -220,6 +225,15 @@ void Player::update(float dt)
 			teleporting = false;
 			teleportCooldownCounter = 0.0f;
 		}
+	}
+	//	Test float keys
+	if (input->wasKeyPressed(PlayerGUpKey))
+	{
+		teleportFloat += 0.1;
+	}
+	if (input->wasKeyPressed(PlayerGDownKey))
+	{
+		teleportFloat -= 0.1;
 	}
 
 	torso->setDirection(direction);

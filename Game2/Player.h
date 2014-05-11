@@ -50,6 +50,7 @@ public:
 	bool canStrafe;
 	bool hasWeapon;
 	bool teleporting;
+	float teleportFloat;
 
 	float teleportCooldownCounter;
 	float teleportCooldown;

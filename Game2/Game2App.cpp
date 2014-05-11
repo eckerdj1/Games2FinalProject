@@ -821,8 +821,9 @@ void Game2App::drawScene()
 	
 	outs.precision(6);
 	outs << "Lives Remaining: " << playState.livesRemaining;
-	outs << "\tMousePos X: "  << D3DApp::MousePos.x << "  Y: " << D3DApp::MousePos.y << "\n";
-	outs << "Pick ups Left: " << playState.pickUpsRemaining << "\n";
+	outs << "\t\tMousePos X: "  << D3DApp::MousePos.x << "  Y: " << D3DApp::MousePos.y << "\n";
+	outs << "Pick ups Left: " << playState.pickUpsRemaining;
+	outs << "\t\tTeleport Float: " << player.teleportFloat << "\n";
 	//outs << "Game Time: " << mTimer.getGameTime() << "\n";
 	//outs << "CameraPos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << "\n";
 	//outs << "Target: " << target.x << ", " << target.y << ", " << target.z << "\n";
