@@ -213,7 +213,12 @@ void Enemy::update(float dt)
 		{
 			if(pathIndex == aiPath.size() - 1)
 			{
-				pathDir = -1;
+				if (aiPath[aiPath.size() - 1] == aiPath[0])
+				{
+					pathIndex = -1;
+				}
+				else
+					pathDir = -1;
 			}
 			if (pathIndex == 0)
 			{
