@@ -27,6 +27,7 @@ Player::Player()
 	teleporting = false;
 	weapon = 0;
 	teleportFloat = 2.5f;
+	factor = -0.02f;
 }
 
 Player::~Player()
@@ -41,7 +42,7 @@ Player::~Player()
 	delete leftForearm;
 }
 
-void Player::init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* d, Light* light)
+void Player::init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* d, Light* light, Light* teleLight)
 {
 	device = d;
 
@@ -81,6 +82,11 @@ void Player::init(string n, Vector3 pos, float spd, float height, float width, f
 	perimeter.push_back(Vector3(pos.x, 0.1f, pos.z - width* 0.75f));
 	perimeter.push_back(Vector3(pos.x - width* 0.75f, 0.1f, pos.z));
 	spotLight = light;
+	teleportLight = teleLight;
+	teleportLight->pos = Vector3(0.0f, 25.0f, 0.0f);
+	Vector3 teleTarget = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 teleLookAt = teleTarget - teleportLight->pos;
+	Normalize(&teleportLight->dir, &(teleLookAt));
 
 	buildBody();
 }
@@ -227,7 +233,11 @@ void Player::update(float dt)
 	if (weapon && weapon->getName() == "TeleportGun")
 	{
 		float distSquared = (xDist * xDist + yDist * yDist);
-		if (input->getMouseLButton() && !teleporting)
+
+		teleportLight->pos = position + direction * sqrt(distSquared) / teleportFloat;
+		teleportLight->pos.y = 25.0f;
+
+		if (input->getMouseLButton() && !teleporting && keyPressed(VK_MENU))
 		{
 			position += direction * sqrt(distSquared) / teleportFloat;
 			for (int i=0; i<perimeter.size(); ++i)
@@ -342,6 +352,21 @@ void Player::update(float dt)
 	//spotLight->pos.y += 10.0f;
 	//Vector3 normalizedDir = (torso->getDirection()*12)-torso->getPosition();
 	Normalize(&spotLight->dir, &(lightLookAt));
+
+	//change color in a cyclical movement
+
+	teleportLight->ambient.g += factor;
+	teleportLight->diffuse.r += factor;
+	teleportLight->diffuse.g += factor;
+	teleportLight->specular.g += factor;
+	if (teleportLight->diffuse.g < 0.1f || teleportLight->diffuse.g > 1.0f) {
+		factor *= -1;
+	}
+	if (keyPressed(VK_MENU)) {
+		teleportLight->range = 1000.0f;
+	} else {
+		teleportLight->range = 0.0f;
+	}
 	
 
 	//	leg movement

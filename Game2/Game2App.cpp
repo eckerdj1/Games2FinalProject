@@ -167,6 +167,15 @@ void Game2App::initApp()
 	spotLight.spotPow  = 22.0f;
 	spotLight.range    = 200.0f;
 
+	teleportLight.ambient  = D3DXCOLOR(0.0f, .80f, 1.0f, 1.0f);
+	teleportLight.diffuse  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	teleportLight.specular = D3DXCOLOR(0.0f, .80f, 1.0f, 1.0f);
+	teleportLight.att.x    = 1.0f;
+	teleportLight.att.y    = 0.00f;
+	teleportLight.att.z    = 0.000f;
+	teleportLight.spotPow  = 64.0f;
+	teleportLight.range    = 0.0f;
+
 	playerBox = new Box();
 	enemyBox = new Box();
 	wallBox = new Box();
@@ -174,7 +183,7 @@ void Game2App::initApp()
 
 	playerBox->init(md3dDevice, 1, 1, 1, LightBlue, LightBlue);
 	player.attachBox(playerBox);
-	player.init("Daniel", Vector3(0, 0, 0), 20, 17, 6, 3.3f, md3dDevice, &spotLight);
+	player.init("Daniel", Vector3(0, 0, 0), 20, 17, 6, 3.3f, md3dDevice, &spotLight, &teleportLight);
 	player.attachApp(this);
 
 	enemyBox->init(md3dDevice, 1, 1, 1, DarkRed, DarkRed);
@@ -813,6 +822,7 @@ void Game2App::drawScene()
 
 	// light for Player
 	mfxSpotVar->SetRawValue(&spotLight, 0, sizeof(Light));
+	mfxTeleVar->SetRawValue(&teleportLight, 0, sizeof(Light));
 	// light for Enemies
 	/*for (int i = 0; i < numberOfSpotLights; i++) {
 		mfxSpotVars.resize(level->spotLights.size());
@@ -996,6 +1006,7 @@ void Game2App::buildFX()
 	}
 	mfxAmbientVar = mFX->GetVariableByName("ambientLight");
 	mfxSpotVar = mFX->GetVariableByName("spotLight");
+	mfxTeleVar = mFX->GetVariableByName("teleportLight");
 	for (int i = 0; i < numberOfSpotLights; i++)
 	{
 		ID3D10EffectVariable* vars = mFX->GetVariableByName("spotLights")->GetElement(i);

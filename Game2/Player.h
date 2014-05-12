@@ -24,7 +24,7 @@ public:
 	Player();
 	~Player(void);
 
-	void init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* device, Light* light);
+	void init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* device, Light* light, Light* teleLight);
 	void buildBody();
 	void attachApp(Game2App* _app);
 
@@ -54,7 +54,7 @@ public:
 	bool hasWeapon;
 	bool teleporting;
 	float teleportFloat;
-
+	float factor;
 	float teleportCooldownCounter;
 	float teleportCooldown;
 
@@ -70,6 +70,7 @@ private:
 	Vector3 position;
 	Vector3 direction;
 	Light* spotLight;
+	Light* teleportLight;
 	Vector2 mousePos, lastMousePos;
 
 	Game2App* app;

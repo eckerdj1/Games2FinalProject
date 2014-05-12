@@ -141,6 +141,7 @@ private:
 	Light ambientLight;
 	Light splashLight;
 	Light spotLight;
+	Light teleportLight;
 	int numberOfLights;
 	int numberOfSpotLights;
 	int lightType; // 0-parallel, 1-pointlight, 2-spotlight
@@ -208,6 +209,7 @@ private:
 	vector<ID3D10EffectVariable*> mfxLightVar;
 	vector<ID3D10EffectVariable*> mfxSpotVars;
 	ID3D10EffectVariable* mfxSpotVar;
+	ID3D10EffectVariable* mfxTeleVar;
 	ID3D10EffectVariable* mfxAmbientVar;
 	ID3D10EffectScalarVariable* mfxLightType;
 	ID3D10EffectScalarVariable* mfxLightCount;

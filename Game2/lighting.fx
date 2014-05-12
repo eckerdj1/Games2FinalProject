@@ -15,6 +15,7 @@ cbuffer cbPerFrame
 	Light ambientLight;
 	Light spotLights[30];
 	Light spotLight;
+	Light teleportLight;
 	Light splashLight;
 	int gLightType; 
 	float3 gEyePosW;
@@ -124,6 +125,7 @@ float4 PS(VS_OUT pIn) : SV_Target
 		litColor += Spotlight(v, spotLights[i], gEyePosW);
 	}
 	litColor += Spotlight(v, spotLight, gEyePosW);
+	litColor += Spotlight(v, teleportLight, gEyePosW);
 
 	if (useSplashLight == 1)
 		litColor = ParallelLight(v, splashLight, gEyePosW);
