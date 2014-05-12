@@ -266,7 +266,7 @@ void Player::update(float dt)
 	{
 		speed = normalSpeed;
 	}
-	if (keyPressed(PlayerForwardKey))
+	if (input->getMouseRButton())
 	{
 		//torso->setSpeed(speed);
 		position += direction * speed * dt;
@@ -279,14 +279,14 @@ void Player::update(float dt)
 		}
 		moving = true;
 	}
-	if (keyPressed(PlayerBackKey))
-	{
-		position -= direction * speed * dt;
-		for (int i = 0; i < perimeter.size(); i++) {
-			perimeter[i] -= direction * speed * dt;
-		}
-		moving = true;
-	}
+	//if (keyPressed(PlayerBackKey))
+	//{
+	//	position -= direction * speed * dt;
+	//	for (int i = 0; i < perimeter.size(); i++) {
+	//		perimeter[i] -= direction * speed * dt;
+	//	}
+	//	moving = true;
+	//}
 	if (!moving)
 		elapsed = 0;
 	if (canStrafe)

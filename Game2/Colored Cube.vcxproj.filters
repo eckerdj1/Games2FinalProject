@@ -233,5 +233,11 @@
     <None Include="level3.txt">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="levelBackstab1.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="levelTeleport1.txt">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

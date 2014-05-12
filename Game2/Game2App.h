@@ -122,6 +122,8 @@ private:
 	Level* level1;
 	Level* level2;
 	Level* level3;
+	Level* level4;
+	Level* level5;
 	Floor floor;
 	PlayState playState;
 	GameState gameState;

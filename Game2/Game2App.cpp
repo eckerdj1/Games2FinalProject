@@ -197,6 +197,8 @@ void Game2App::initApp()
 	level1 = 0;
 	level2 = 0;
 	level3 = 0;
+	level4 = 0;
+	level5 = 0;
 	numberOfSpotLights = 30; 
 		
 	target = splashTarget;
@@ -325,6 +327,14 @@ void Game2App::updateScene(float dt)
 				if (level3 == 0)
 					toLoading = true;
 				break;
+			case 4:
+				if (level4 == 0)
+					toLoading = true;
+				break;
+			case 5:
+				if (level5 == 0)
+					toLoading = true;
+				break;
 			}
 			if (toLoading)
 			{
@@ -342,7 +352,7 @@ void Game2App::updateScene(float dt)
 		playState.level += 1;
 		playState.livesRemaining = 3;
 		playState.newLevel = true;
-		if (playState.level > 3) 
+		if (playState.level > 5) 
 		{
 			gameState = GAMEWIN;
 		} 
@@ -361,6 +371,14 @@ void Game2App::updateScene(float dt)
 				break;
 			case 3:
 				if (level3 == 0)
+					toLoading = true;
+				break;
+			case 4:
+				if (level4 == 0)
+					toLoading = true;
+				break;
+			case 5:
+				if (level5 == 0)
 					toLoading = true;
 				break;
 			}
@@ -421,6 +439,14 @@ void Game2App::updateScene(float dt)
 			if (level3 == 0)
 				toLoading = true;
 			break;
+		case 4:
+			if (level4 == 0)
+				toLoading = true;
+			break;
+		case 5:
+			if (level5 == 0)
+				toLoading = true;
+			break;
 		}
 		if (toLoading)
 		{
@@ -472,6 +498,32 @@ void Game2App::updateScene(float dt)
 
 			level = level3;
 		}
+		if (playState.level == 4) 
+		{
+			if (!level4)
+			{
+				level4 = new Level(md3dDevice);
+				level4->setPlayer(&player);
+				level4->attachEnemyBox(enemyBox);
+				level4->attachWallBox(wallBox);
+				level4->fillLevel("levelBackstab1.txt");
+			}
+
+			level = level4;
+		}
+		if (playState.level == 5) 
+		{
+			if (!level5)
+			{
+				level5 = new Level(md3dDevice);
+				level5->setPlayer(&player);
+				level5->attachEnemyBox(enemyBox);
+				level5->attachWallBox(wallBox);
+				level5->fillLevel("levelTeleport1.txt");
+			}
+
+			level = level5;
+		}
 		level->reset();
 
 		level->setDiffuseMap(mfxDiffuseMapVar);
@@ -499,6 +551,12 @@ void Game2App::updateScene(float dt)
 				break;
 			case 3:
 				level = level3;
+				break;
+			case 4:
+				level = level4;
+				break;
+			case 5:
+				level = level5;
 				break;
 			}
 			level->reset();
@@ -619,25 +677,25 @@ void Game2App::updateScene(float dt)
 			gameState = GAMEOVER;
 		}
 
-		if (keyPressed(VK_RIGHT))
+		if (keyPressed(CameraLeftKey))
 		{
 			camTheta -= camTurnSpeed * dt;
 			if (camTheta > 180 || camTheta < -180)
 				camTheta = -camTheta;
 		}
-		if (keyPressed(VK_LEFT))
+		if (keyPressed(CameraRightKey))
 		{
 			camTheta += camTurnSpeed * dt;
 			if (camTheta > 180 || camTheta < -180)
 				camTheta = -camTheta;
 		}
-		if (keyPressed(VK_UP))
+		if (keyPressed(CameraZoomInKey))
 		{
 			camZoom += zoomSpeed * dt;
 			if (camZoom > maxZoom)
 				camZoom = maxZoom;
 		}
-		if (keyPressed(VK_DOWN))
+		if (keyPressed(CameraZoomOutKey))
 		{
 			camZoom -= zoomSpeed * dt;
 			if (camZoom < minZoom)
@@ -663,7 +721,7 @@ void Game2App::updateScene(float dt)
 			else
 				wallDetectionIsOn = true;
 		}
-		if (keyPressed(VK_RBUTTON))
+		/*if (keyPressed(VK_RBUTTON))
 		{
 			camTheta += float(mousePos.x) * dt;
 			camZoom -= float(mousePos.y) * dt;
@@ -673,7 +731,7 @@ void Game2App::updateScene(float dt)
 				camZoom = minZoom;
 			if (camZoom > maxZoom)
 				camZoom = maxZoom;
-		}
+		}*/
 	
 		CameraDirection.x = sinf(camTheta);
 		CameraDirection.z = cosf(camTheta);
