@@ -62,20 +62,24 @@ void Player::init(string n, Vector3 pos, float spd, float height, float width, f
 	position = pos;
 	speed = spd;
 	normalSpeed = speed;
-	sprintBoost = speed * 3.3f;
+	sprintBoost = speed * 2.5f;
 	limbSpeed = speed * 0.5f;
 	this->height = height;
 	this->width = width;
 	this->depth = depth;
 	//make positions points from width, depth
-	perimeter.push_back(Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z - depth/2 - 1.4f));
-	perimeter.push_back(Vector3(pos.x, 0.1f, pos.z - depth/2 - 1.4f));
-	perimeter.push_back(Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z - depth/2 - 1.4f));
-	perimeter.push_back(Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z));
-	perimeter.push_back(Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z + depth/2 + 1.4f));
-	perimeter.push_back(Vector3(pos.x, 0.1f, pos.z + depth/2 + 1.4f));
-	perimeter.push_back(Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z + depth/2 + 1.4f));
-	perimeter.push_back(Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z));
+	//perimeter.push_back(Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z - depth/2 - 1.4f));
+	//perimeter.push_back(Vector3(pos.x, 0.1f, pos.z - depth/2 - 1.4f));
+	//perimeter.push_back(Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z - depth/2 - 1.4f));
+	//perimeter.push_back(Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z));
+	//perimeter.push_back(Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z + depth/2 + 1.4f));
+	//perimeter.push_back(Vector3(pos.x, 0.1f, pos.z + depth/2 + 1.4f));
+	//perimeter.push_back(Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z + depth/2 + 1.4f));
+	//perimeter.push_back(Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z));
+	perimeter.push_back(Vector3(pos.x, 0.1f, pos.z + width* 0.75f));
+	perimeter.push_back(Vector3(pos.x + width* 0.75f, 0.1f, pos.z));
+	perimeter.push_back(Vector3(pos.x, 0.1f, pos.z - width* 0.75f));
+	perimeter.push_back(Vector3(pos.x - width* 0.75f, 0.1f, pos.z));
 	spotLight = light;
 
 	buildBody();
@@ -216,6 +220,7 @@ void Player::update(float dt)
 
 	direction.x = sinf(dirTheta);
 	direction.z = cosf(dirTheta);
+	Normalize(&direction, &direction);
 
 	//	***************************************************************
 	//	Teleportation Code
@@ -252,7 +257,6 @@ void Player::update(float dt)
 	}
 
 	torso->setDirection(direction);
-	torso->setPosition(Vector3(position.x, position.y + height * 0.5f, position.z));
 	//Take care of input
 	//torso->setSpeed(0.0f);
 	bool moving = false;
@@ -269,16 +273,31 @@ void Player::update(float dt)
 	if (input->getMouseRButton())
 	{
 		//torso->setSpeed(speed);
-		position += direction * speed * dt;
+		Vector3 collisionDir(0,0,0);
+		if (colliding)
+		{
+			collisionDir = collisionPoint - position;
+			Normalize(&collisionDir, &collisionDir);
+		}
+		Vector3 moveDir = direction;
+		if ((collisionDir.x < 0 && moveDir.x < 0) || (collisionDir.x > 0 && moveDir.x > 0))
+			moveDir.x = 0;
+		if ((collisionDir.z < 0 && moveDir.z < 0) || (collisionDir.z > 0 && moveDir.z > 0))
+			moveDir.z = 0;
+		//Vector3 moveDir = (direction - collisionDir);
+		//Normalize(&moveDir, &moveDir);
+		position +=  moveDir * speed * dt;
 		if (position.y != 0)
 			position.y = 0;
 		for (int i = 0; i < perimeter.size(); i++) {
-			perimeter[i] += direction * speed * dt;
+			perimeter[i] += moveDir * speed * dt;
 			if (perimeter[i].y != 0)
 				perimeter[i].y = 0;
 		}
 		moving = true;
 	}
+	
+	torso->setPosition(Vector3(position.x, position.y + height * 0.5f, position.z));
 	//if (keyPressed(PlayerBackKey))
 	//{
 	//	position -= direction * speed * dt;
@@ -311,7 +330,7 @@ void Player::update(float dt)
 		}
 	}
 	
-	if (sprinting && moving && !colliding)
+	if (sprinting && moving /*&& !colliding*/)
 		torso->setRotX(ToRadian(15));
 	else
 		torso->setRotX(ToRadian(0));
@@ -334,8 +353,8 @@ void Player::update(float dt)
 	float legOffset = 0;
 	float shinRange = 0;
 	float shinOffset = 10;
-	if (!colliding)
-	{
+	//if (!colliding)
+	//{
 		if (moving && !sprinting) // set the leg position variables
 		{	//swing legs back and forth if moving
 			normPos = 175;
@@ -358,7 +377,7 @@ void Player::update(float dt)
 			shinRange = 80;
 			shinOffset = 55;
 		}
-	}
+	//}
 	// set the leg positions
 	rightLeg->setRotX(ToRadian(normPos + (-legRot * legRange + legOffset)));
 	leftLeg->setRotX(ToRadian(normPos + (legRot * legRange + legOffset)));
@@ -488,14 +507,18 @@ void Player::draw(Matrix mVP)
 void Player::setPosition(Vector3 pos) {
 
 	position = pos;
-	perimeter[0] = Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z - depth/2 - 1.4f);
-	perimeter[1] = Vector3(pos.x, 0.1f, pos.z - depth/2 - 1.4f);
-	perimeter[2] = Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z - depth/2 - 1.4f);
-	perimeter[3] = Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z);
-	perimeter[4] = Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z + depth/2 + 1.4f);
-	perimeter[5] = Vector3(pos.x, 0.1f, pos.z + depth/2 + 1.4f);
-	perimeter[6] = Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z + depth/2 + 1.4f);
-	perimeter[7] = Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z);
+	//perimeter[0] = Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z - depth/2 - 1.4f);
+	//perimeter[1] = Vector3(pos.x, 0.1f, pos.z - depth/2 - 1.4f);
+	//perimeter[2] = Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z - depth/2 - 1.4f);
+	//perimeter[3] = Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z);
+	//perimeter[4] = Vector3(pos.x + width/2 + 1.4f, 0.1f, pos.z + depth/2 + 1.4f);
+	//perimeter[5] = Vector3(pos.x, 0.1f, pos.z + depth/2 + 1.4f);
+	//perimeter[6] = Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z + depth/2 + 1.4f);
+	//perimeter[7] = Vector3(pos.x - width/2 - 1.4f, 0.1f, pos.z);
+	perimeter[0] = Vector3(pos.x, 0.1f, pos.z + width* 0.75f);
+	perimeter[1] = Vector3(pos.x + width* 0.75f, 0.1f, pos.z);
+	perimeter[2] = Vector3(pos.x, 0.1f, pos.z - width* 0.75f);
+	perimeter[3] = Vector3(pos.x - width* 0.75f, 0.1f, pos.z);
 }
 
 void Player::setDiffuseMap(ID3D10EffectShaderResourceVariable* var)
@@ -518,5 +541,16 @@ void Player::setMTech(ID3D10EffectTechnique* m)
 	if (weapon)
 	{
 		weapon->setMTech(m);
+	}
+}
+
+void Player::setCollisionPoint(Vector3 p)
+{
+	if (p == Vector3(0,0,0) || collisionPoint == Vector3(0,0,0))
+		collisionPoint = p;
+	else 
+	{
+		collisionPoint += p;
+		collisionPoint /= 2.0f;
 	}
 }

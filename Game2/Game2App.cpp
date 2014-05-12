@@ -174,7 +174,7 @@ void Game2App::initApp()
 
 	playerBox->init(md3dDevice, 1, 1, 1, LightBlue, LightBlue);
 	player.attachBox(playerBox);
-	player.init("Daniel", Vector3(0, 0, 0), 15, 17, 6, 3.3f, md3dDevice, &spotLight);
+	player.init("Daniel", Vector3(0, 0, 0), 20, 17, 6, 3.3f, md3dDevice, &spotLight);
 	player.attachApp(this);
 
 	enemyBox->init(md3dDevice, 1, 1, 1, DarkRed, DarkRed);
@@ -572,9 +572,7 @@ void Game2App::updateScene(float dt)
 			oldPerimeter.push_back(player.perimeter[i]);
 		}
 		spotted = false;
-		player.update(dt);
-		floor.update(dt);
-		level->update(dt);
+		
 		// enemy sight detection
 		for (int i=0; i<level->enemies.size(); ++i)
 		{
@@ -633,7 +631,7 @@ void Game2App::updateScene(float dt)
 			}
 		}
 		if(spotted && spotCounter == 0) {
-			spotCounter += 2.0f;
+			spotCounter += 1.5f;
 			audio->playCue(ALARM);
 			//playState.livesRemaining--;
 		}
@@ -651,16 +649,18 @@ void Game2App::updateScene(float dt)
 				level->pickups[i].setInActive();
 			}
 		}
+		player.setCollisionPoint(Vector3(0,0,0));
 		for (int i = 0; i < level->walls.size(); i++) {
 			for (int j = 0; j < player.perimeter.size(); j++) {
 				if (level->walls[i].contains(player.perimeter[j])) {
 					if (i != level->walls.size() -1)
 					{
+						player.setCollisionPoint(player.perimeter[j]);
 						player.colliding = true;
-						player.setPosition(oldPlayerPos);
-						for (int k = 0; k < player.perimeter.size(); k++) {
+						//player.setPosition(oldPlayerPos);
+						/*for (int k = 0; k < player.perimeter.size(); k++) {
 							player.perimeter[k] = oldPerimeter[k];
-						}
+						}*/
 					}
 					else
 						if (playState.pickUpsRemaining == 0)
@@ -672,6 +672,9 @@ void Game2App::updateScene(float dt)
 				}
 			}
 		}
+		player.update(dt);
+		floor.update(dt);
+		level->update(dt);
 		if (playState.livesRemaining == 0)
 		{
 			gameState = GAMEOVER;

@@ -46,6 +46,7 @@ public:
 
 	void syncInput(Input* in) {input = in;}
 	void setWeapon(Weapon* w);
+	void setCollisionPoint(Vector3 p);
 
 public:
 	bool colliding;
@@ -77,6 +78,8 @@ private:
 
 	
 	Vector3 left, right, forward, back, up, down, zero;
+
+	Vector3 collisionPoint;
 
 
 	float height;
