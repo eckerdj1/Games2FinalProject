@@ -44,6 +44,8 @@ private:
 	
 	Vector3 position;
 	Vector3 direction;
+	Vector3 lastLoc;
+	int c;
 
 	float height;
 	float width;

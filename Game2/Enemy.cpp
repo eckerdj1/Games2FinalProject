@@ -154,73 +154,62 @@ void Enemy::update(float dt)
 	switch(aiMode) {
 	case RANDOM:
 		//Check if first time through. If so, select random waypoint within bounds
-		//if(aiPath.size() == 0) {
-		//	/*float xRange;
-		//	float zRange;
-		//	float tempX1, tempX2, xOffset;
-		//	float tempZ1, tempZ2, zOffset;
-		//	
-		//	if(xBounds.x < 0) {tempX1 = - xBounds.x;} else {tempX1 = xBounds.x;}
-		//	if(xBounds.y < 0) {tempX2 = - xBounds.y;} else {tempX2 = xBounds.y;}
-		//	if(zBounds.x < 0) {tempZ1 = - zBounds.x;} else {tempZ1 = zBounds.x;}
-		//	if(zBounds.y < 0) {tempZ2 = - zBounds.y;} else {tempZ2 = zBounds.y;}
+		if(aiPath.size() == 0) {
+			c= 0;
+			lastLoc = position;
+			float xRand, zRand;
+ 			std::random_device rseed;
+			std::mt19937 rng(rseed());
+			std::uniform_int<int> dist1(xBounds.x,xBounds.y);
+			xRand = dist1(rng)*5;
+			std::uniform_int<int> dist2(zBounds.x,zBounds.y);
+			zRand = dist2(rng)*5;
 
-		//	xRange = tempX1 + tempX2;
-		//	zRange = tempZ1 + tempZ2;*/
+			//aiPath.push_back(Vector3(xRand, position.y, zRand));
+			aiPath.push_back(Vector3(xBounds.y*5, position.y, zBounds.y*5));
+			direction = aiPath[0] - position;
+			D3DXVec3Normalize(&direction, &direction);
 
-		//	float xRand, zRand;
-		//	std::random_device rseed;
-		//	std::mt19937 rng(rseed());
-		//	std::uniform_int<int> dist1(xBounds.x,xBounds.y);
-		//	xRand = dist1(rng);
-		//	std::uniform_int<int> dist2(zBounds.x,zBounds.y);
-		//	zRand = dist2(rng);
+			elapsed = 0;
+		}
+		
+		//Check if close to destination
+		//	If so, calculate and set new destination
+		if(((position.x < (aiPath[0].x + 5.0f)) && (position.x > (aiPath[0].x - 5.0f)))
+		&&((position.z < (aiPath[0].z + 5.0f)) && (position.z > (aiPath[0].z - 5.0f))))
+		{
+			
+			float xRand, zRand;
+			c++;
+			std::random_device rseed;
+			std::mt19937 rng(rseed());
 
-		//	aiPath.push_back(Vector3(xRand, position.y, zRand));
-		//	direction = aiPath[0] - position;
-		//	D3DXVec3Normalize(&direction, &direction);
-		//}
+			std::uniform_int<int> dist1(xBounds.x, xBounds.y);
+			xRand = dist1(rng)*5;
+			std::uniform_int<int> dist2(zBounds.x, zBounds.y);
+			zRand = dist2(rng)*5;
 
-		////Check if close to destination
-		////	If so, calculate and set new destination
-		//if(((position.x < (aiPath[pathIndex].x + 1.0f)) && (position.x > (aiPath[pathIndex].x - 1.0f)))
-		//&&((position.z < (aiPath[pathIndex].z + 1.0f)) && (position.z > (aiPath[pathIndex].z - 1.0f))))
-		//{
-		//	float xRand, zRand;
+			lastLoc = aiPath[0];
+			aiPath[0] = Vector3(xRand, position.y, zRand);
+			direction = aiPath[0] - position;
+			D3DXVec3Normalize(&direction, &direction);
 
-		//	std::random_device rseed;
-		//	std::mt19937 rng(rseed());
+			elapsed = 0;
+		}
 
-		//	std::uniform_int<int> dist1(xBounds.x, xBounds.y);
-		//	xRand = dist1(rng);
-		//	std::uniform_int<int> dist2(zBounds.x, zBounds.y);
-		//	zRand = dist2(rng);
+		//Move toward waypoint, updating both position and direction
 
-		//	aiPath[0] = Vector3(xRand, position.y, zRand);
-		//	direction = aiPath[0] - position;
-		//	D3DXVec3Normalize(&direction, &direction);
-
-		//	elapsed = 0;
-		//}
-
-		////Move toward waypoint, updating both position and direction
-		//if(pathIndex == 0)
-		//	OutputDebugString(L"0\n");
-		//else
-		//	OutputDebugString(L"1\n");
-
-
-		//position += direction * speed * dt;
-		//moving = true;
-
+		position += direction * speed * dt;
+		moving = true;
+		
 		break;
 	case PATH:
 
 
 		//Check if close to waypoint
 		//	If so, calculate and set new waypoint
-		if(((position.x < (aiPath[pathIndex].x + 1.0f)) && (position.x > (aiPath[pathIndex].x - 1.0f)))
-		&&((position.z < (aiPath[pathIndex].z + 1.0f)) && (position.z > (aiPath[pathIndex].z - 1.0f))))
+		if(((position.x < (aiPath[pathIndex].x + 5.0f)) && (position.x > (aiPath[pathIndex].x - 5.0f)))
+		&&((position.z < (aiPath[pathIndex].z + 5.0f)) && (position.z > (aiPath[pathIndex].z - 5.0f))))
 		{
 			if(pathIndex == aiPath.size() - 1)
 			{
