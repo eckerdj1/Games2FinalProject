@@ -11,6 +11,7 @@
 #include "BodyPart.h"
 #include "CubeTex.h"
 #include "Body.h"
+#include "Weapon.h"
 using std::vector;
 using std::string;
 
@@ -34,7 +35,7 @@ public:
 	void update(float dt);
 	void draw(Matrix);
 	
-	void setMTech(ID3D10EffectTechnique* m) { mTech = m;}
+	void setMTech(ID3D10EffectTechnique* m);
 	void setEffectVariables(ID3D10EffectMatrixVariable*, ID3D10EffectMatrixVariable*);
 	void Player::setLightingVar(Light* light);
 	Vector3 getPosition() {return position;}
@@ -44,6 +45,7 @@ public:
 	float getHeight() {return height;}
 
 	void syncInput(Input* in) {input = in;}
+	void setWeapon(Weapon* w);
 
 public:
 	bool colliding;
@@ -54,6 +56,9 @@ public:
 
 	float teleportCooldownCounter;
 	float teleportCooldown;
+
+	Weapon* weapon;
+
 
 private:
 	string name;

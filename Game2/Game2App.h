@@ -114,6 +114,7 @@ private:
 	Box* playerBox;
 	Box* enemyBox;
 	Box* wallBox;
+	Box* blackBox;
 
 	GameObject outline[11];
 	Player player;
@@ -230,6 +231,8 @@ private:
 
 	//my edits
 	D3DXMATRIX worldBox1, worldBox2;
+
+	Weapon* teleportGun;
 
 	float mTheta;
 	float mPhi;

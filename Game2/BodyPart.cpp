@@ -38,7 +38,7 @@ void BodyPart::update(float dt)
 	transY = position.y;
 	transZ = position.z;
 	rotY = atan2f(direction.x, direction.z);
-	if (name == "torso" || name == "base")
+	if (name == "torso" || name == "base" || name == "Body")
 	{
 		//position += direction * getSpeed() * dt;
 		traverse(world);

@@ -19,7 +19,10 @@ public:
 	Body(void);
 	~Body(void);
 
-	virtual void init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* device, Light* light) = 0;
+	virtual void init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* device, Light* light)
+	{
+
+	}
 	virtual void buildBody() = 0;
 
 	virtual void setDiffuseMap(ID3D10EffectShaderResourceVariable* var) = 0;

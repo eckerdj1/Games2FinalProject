@@ -25,6 +25,7 @@ Player::Player()
 	teleportCooldown = 2.0f;
 	teleportCooldownCounter = 0.0f;
 	teleporting = false;
+	weapon = 0;
 	teleportFloat = 2.5f;
 }
 
@@ -36,6 +37,8 @@ Player::~Player()
 	delete leftArm;
 	delete rightLeg;
 	delete leftLeg;
+	delete rightForearm;
+	delete leftForearm;
 }
 
 void Player::init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* d, Light* light)
@@ -78,6 +81,11 @@ void Player::init(string n, Vector3 pos, float spd, float height, float width, f
 	buildBody();
 }
 
+void Player::setWeapon(Weapon* w)
+{
+	weapon = w;
+}
+
 void Player::attachBox(Box* box)
 {
 	b = box;
@@ -87,6 +95,10 @@ void Player::setEffectVariables(ID3D10EffectMatrixVariable* wvpVar, ID3D10Effect
 {
 	mfxWVPVar = wvpVar;
 	mfxWorldVar = worldVar;
+	if (weapon)
+	{
+		weapon->setEffectVariables(wvpVar, worldVar);
+	}
 }
 
 void Player::buildBody()
@@ -409,6 +421,15 @@ void Player::update(float dt)
 	rightForearm->setRotX(ToRadian(normForearmPos + (forearmRot * forearmRange) - forearmOffset));
 	leftForearm->setRotX(ToRadian(normForearmPos + (-forearmRot * forearmRange) - forearmOffset));
 
+	//	Update Weapon if we have one
+	if (weapon)
+	{
+		Vector3 offset(0.0f, 10.0f, 0.0f);
+		weapon->setPosition(position + direction * 5.0f + offset);
+		weapon->setDirection(direction);
+		weapon->update(dt);
+	}
+
 	//Update the bodyparts
 	head->update(dt);
 	rightArm->update(dt);
@@ -433,6 +454,11 @@ void Player::draw(Matrix mVP)
     {
 		torso->draw(mVP);
     }
+
+	if (weapon)
+	{
+		weapon->draw(mVP);
+	}
 
 
 }
@@ -462,4 +488,13 @@ void Player::setLightingVar(Light* light) {
 void Player::attachApp(Game2App* _app)
 {
 	app = _app;
+}
+
+void Player::setMTech(ID3D10EffectTechnique* m)
+{
+	mTech = m;
+	if (weapon)
+	{
+		weapon->setMTech(m);
+	}
 }

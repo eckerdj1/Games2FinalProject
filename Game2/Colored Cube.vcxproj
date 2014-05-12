@@ -113,6 +113,7 @@
     <ClCompile Include="TileObject.cpp" />
     <ClCompile Include="Tower.cpp" />
     <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="audio.h" />

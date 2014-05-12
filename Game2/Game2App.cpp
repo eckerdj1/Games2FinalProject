@@ -170,6 +170,7 @@ void Game2App::initApp()
 	playerBox = new Box();
 	enemyBox = new Box();
 	wallBox = new Box();
+	blackBox = new Box();
 
 	playerBox->init(md3dDevice, 1, 1, 1, LightBlue, LightBlue);
 	player.attachBox(playerBox);
@@ -179,6 +180,7 @@ void Game2App::initApp()
 	enemyBox->init(md3dDevice, 1, 1, 1, DarkRed, DarkRed);
 	wallBox->init(md3dDevice, 1, 1, 1, White, White);
 	wallBox->setDiffuseMap(mfxDiffuseMapVar);
+	blackBox->init(md3dDevice, 1, 1, 1, Gray, Gray);
 
 	//level1 = new Level(md3dDevice);
 	//level1->setPlayer(&player);
@@ -210,6 +212,11 @@ void Game2App::initApp()
 
 	player.setDiffuseMap(mfxDiffuseMapVar);
 	player.syncInput(input);
+	teleportGun = new Weapon();
+	teleportGun->attachBox(blackBox);
+	teleportGun->init("TeleportGun", Vector3(0, 10, 0), 15, 1.5f, 2.0f, 5.0f, md3dDevice);
+	player.setWeapon(teleportGun);
+	
 	//delete spotLight;
 	//level->setDiffuseMap(mfxDiffuseMapVar);
 	//level->setSpecMap(mfxSpecMapVar);

@@ -15,14 +15,14 @@ using std::string;
 
 class BodyPart;
 
-class Weapon
+class Weapon : public Body
 {
 public:
 	Weapon();
 	~Weapon(void);
 
 	void init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* device);
-	void buildParts();
+	void buildBody();
 
 	void setDiffuseMap(ID3D10EffectShaderResourceVariable* var);
 
@@ -34,20 +34,24 @@ public:
 	
 	Vector3 getPosition() {return position;}
 	Vector3 getDirection() {return direction;}
+
+	void setPosition(Vector3 pos) {position = pos;}
+	void setDirection(Vector3 dir) {direction = dir;}
 public:
-	D3DXMATRIX mWVP;
-	ID3D10EffectMatrixVariable* mfxWVPVar;
-	ID3D10EffectMatrixVariable* mfxWorldVar;
-	ID3D10EffectTechnique* mTech;
-	ID3D10EffectShaderResourceVariable* diffuseMapVar;
+
+	void attachBox(Box* b);
 
 private:
 	string name;
 
 	vector<BodyPart*> parts;
 
+	float speed;
+
 	Vector3 position;
 	Vector3 direction;
+	Vector3 size;
 
+	Box* box;
 	ID3D10Device* device;
 };
