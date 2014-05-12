@@ -23,6 +23,7 @@ public:
 
 	void init(string n, Vector3 pos, float spd, float height, float width, float depth, ID3D10Device* device);
 	void buildBody();
+	void addPart(string name, string addTo, Vector3 pos, Vector3 size);
 
 	void setDiffuseMap(ID3D10EffectShaderResourceVariable* var);
 
@@ -40,6 +41,11 @@ public:
 public:
 
 	void attachBox(Box* b);
+	void setRotX(string partName, float rot);
+	void setRotY(string partName, float rot);
+	void setRotZ(string partName, float rot);
+
+	string getName() {return name;}
 
 private:
 	string name;
@@ -54,4 +60,7 @@ private:
 
 	Box* box;
 	ID3D10Device* device;
+
+private:
+	void addToPart(BodyPart* part, string root);
 };

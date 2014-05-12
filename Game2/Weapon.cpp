@@ -20,31 +20,66 @@ void Weapon::init(string n, Vector3 pos, float spd, float height, float width, f
 	size.y = height;
 	size.z = depth;
 	device = _device;
-
-	buildBody();
+	direction = Vector3(0,0,0);
 }
 
 void Weapon::buildBody()
 {
-	BodyPart* part = new BodyPart();
 
-	part->init("Body", box, position, direction, size, speed);
-	part->setBody(this);
-	parts.push_back(part);
-
-	part = new BodyPart();
-	part->init("FrontHandle", box, Vector3(0.0f, size.y * 0.5f, size.z * 0.25f), direction, 
-		Vector3(size.x * 1.87f, size.y * 0.25f, size.y * 0.25f), speed);
-	part->setBody(this);
-	parts.push_back(part);
-
-	part = new BodyPart();
-	part->init("Barrel1", box, Vector3(0.0f, size.y * 0.5f, size.z * 0.55f), direction,
-		Vector3(size.x * 0.6f, size.y * 0.8f, size.z * 0.2f), speed);
-	part->setBody(this);
-	parts.push_back(part);
 
 	
+}
+
+void Weapon::setRotX(string partName, float rot)
+{
+	for (int i=0; i<parts.size(); ++i)
+	{
+		if (parts[i]->getName() == partName)
+		{
+			parts[i]->setRotX(rot);
+		}
+	}
+}
+void Weapon::setRotY(string partName, float rot)
+{
+	for (int i=0; i<parts.size(); ++i)
+	{
+		if (parts[i]->getName() == partName)
+		{
+			parts[i]->setRotY(rot);
+		}
+	}
+}
+void Weapon::setRotZ(string partName, float rot)
+{
+	for (int i=0; i<parts.size(); ++i)
+	{
+		if (parts[i]->getName() == partName)
+		{
+			parts[i]->setRotZ(rot);
+		}
+	}
+}
+
+void Weapon::addPart(string n, string addTo, Vector3 pos, Vector3 size)
+{
+	BodyPart* part = new BodyPart();
+	part->init(n, box, pos, direction, size, speed);
+	part->setBody(this);
+	addToPart(part, addTo);
+	parts.push_back(part);
+}
+
+void Weapon::addToPart(BodyPart* part, string root)
+{
+	for (int i=0; i<parts.size(); ++i)
+	{
+		if (parts[i]->getName() == root)
+		{
+			part->setRoot(parts[i]);
+			parts[i]->addChild(part);
+		}
+	}
 }
 
 void Weapon::attachBox(Box* b)

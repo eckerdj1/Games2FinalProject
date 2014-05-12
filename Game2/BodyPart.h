@@ -39,6 +39,8 @@ public:
 	void addRotY(float theta) {rotY += theta;}
 	void addRotZ(float phi) {rotZ += phi;}
 
+	string getName() {return name;}
+
 	void traverse(Matrix m);
 	Matrix getWorld();
 

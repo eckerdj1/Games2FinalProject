@@ -131,25 +131,25 @@ void Player::buildBody()
 	// right arm
 	Vector3 raPos = position;
 	Vector3 torsoSize = torso->getSize();
-	raPos += Vector3(width * 0.65f, torsoSize.y * 0.8f, 0);
-	rightArm->init("rightArm", b, raPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
+	raPos += Vector3(width * 0.65f, torsoSize.y * 0.87f, 0);
+	rightArm->init("rightArm", b, raPos, direction, Vector3(width * 0.2f, height * 0.23f, depth * 0.4f), speed);
 	rightArm->setBody(this);
 	rightArm->setRoot(torso);
 	//	right forearm
-	Vector3 rfaPos(0, height * 0.225f, 0);
-	rightForearm->init("rightForearm", b, rfaPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
+	Vector3 rfaPos(0, height * 0.24f, 0);
+	rightForearm->init("rightForearm", b, rfaPos, direction, Vector3(width * 0.2f, height * 0.23f, depth * 0.4f), speed);
 	rightForearm->setBody(this);
 	rightForearm->setRoot(rightArm);
 
 	// left arm
 	Vector3 laPos = position;
-	laPos += Vector3(width * -0.65f, torsoSize.y * 0.8f, 0);
-	leftArm->init("leftArm", b, laPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
+	laPos += Vector3(width * -0.65f, torsoSize.y * 0.87f, 0);
+	leftArm->init("leftArm", b, laPos, direction, Vector3(width * 0.2f, height * 0.23f, depth * 0.4f), speed);
 	leftArm->setBody(this);
 	leftArm->setRoot(torso);
 	//	left forearm
-	Vector3 lfaPos(0, height * 0.225f, 0);
-	leftForearm->init("leftForearm", b, lfaPos, direction, Vector3(width * 0.2f, height * 0.21f, depth * 0.5f), speed);
+	Vector3 lfaPos(0, height * 0.24f, 0);
+	leftForearm->init("leftForearm", b, lfaPos, direction, Vector3(width * 0.2f, height * 0.23f, depth * 0.4f), speed);
 	leftForearm->setBody(this);
 	leftForearm->setRoot(leftArm);
 
@@ -219,23 +219,26 @@ void Player::update(float dt)
 
 	//	***************************************************************
 	//	Teleportation Code
-	float distSquared = (xDist * xDist + yDist * yDist);
-	if (input->getMouseLButton() && !teleporting)
+	if (weapon && weapon->getName() == "TeleportGun")
 	{
-		position += direction * sqrt(distSquared) / teleportFloat;
-		for (int i=0; i<perimeter.size(); ++i)
+		float distSquared = (xDist * xDist + yDist * yDist);
+		if (input->getMouseLButton() && !teleporting)
 		{
-			perimeter[i] += direction * sqrt(distSquared) / teleportFloat;
+			position += direction * sqrt(distSquared) / teleportFloat;
+			for (int i=0; i<perimeter.size(); ++i)
+			{
+				perimeter[i] += direction * sqrt(distSquared) / teleportFloat;
+			}
+			teleporting = true;
 		}
-		teleporting = true;
-	}
-	if (teleporting)
-	{
-		teleportCooldownCounter += dt;
-		if (teleportCooldownCounter > teleportCooldown)
+		if (teleporting)
 		{
-			teleporting = false;
-			teleportCooldownCounter = 0.0f;
+			teleportCooldownCounter += dt;
+			if (teleportCooldownCounter > teleportCooldown)
+			{
+				teleporting = false;
+				teleportCooldownCounter = 0.0f;
+			}
 		}
 	}
 	//	Test float keys
@@ -319,7 +322,7 @@ void Player::update(float dt)
 	Vector3 lightLookAt = lightTarget - spotLight->pos;
 	//spotLight->pos.y += 10.0f;
 	//Vector3 normalizedDir = (torso->getDirection()*12)-torso->getPosition();
-	D3DXVec3Normalize(&spotLight->dir, &(lightLookAt));
+	Normalize(&spotLight->dir, &(lightLookAt));
 	
 
 	//	leg movement
@@ -424,10 +427,29 @@ void Player::update(float dt)
 	//	Update Weapon if we have one
 	if (weapon)
 	{
-		Vector3 offset(0.0f, 10.0f, 0.0f);
-		weapon->setPosition(position + direction * 5.0f + offset);
-		weapon->setDirection(direction);
-		weapon->update(dt);
+		if (weapon->getName() == "TeleportGun")
+		{
+			float weaponTheta = dirTheta + 0.25f;	
+			Vector3 weaponDir(0,0,0);
+			weaponDir.x = sinf(weaponTheta);
+			weaponDir.z = cosf(weaponTheta);
+			Normalize(&weaponDir, &weaponDir);
+			Vector3 offset(0.0f, 10.3f, 0.0f);
+			weapon->setPosition(position + weaponDir * 4.6f + offset);
+			weapon->setDirection(direction);
+			weapon->update(dt);
+
+			//	Move arms to hold gun
+			rightArm->setRotZ(ToRadian(-32));
+			rightArm->setRotX(ToRadian(120));
+			rightForearm->setRotZ(ToRadian(125));
+			rightForearm->setRotX(ToRadian(0));
+			//	Good Don't Touch Left Arm
+			leftArm->setRotX(ToRadian(120));
+			leftArm->setRotZ(ToRadian(10));
+			leftForearm->setRotZ(ToRadian(-62));
+			leftForearm->setRotX(ToRadian(-17));
+		}
 	}
 
 	//Update the bodyparts

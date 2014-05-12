@@ -180,7 +180,7 @@ void Game2App::initApp()
 	enemyBox->init(md3dDevice, 1, 1, 1, DarkRed, DarkRed);
 	wallBox->init(md3dDevice, 1, 1, 1, White, White);
 	wallBox->setDiffuseMap(mfxDiffuseMapVar);
-	blackBox->init(md3dDevice, 1, 1, 1, Gray, Gray);
+	blackBox->init(md3dDevice, 1, 1, 1, White, White);
 
 	//level1 = new Level(md3dDevice);
 	//level1->setPlayer(&player);
@@ -212,9 +212,41 @@ void Game2App::initApp()
 
 	player.setDiffuseMap(mfxDiffuseMapVar);
 	player.syncInput(input);
+
+	//	Creating the Teleportation Gun
 	teleportGun = new Weapon();
 	teleportGun->attachBox(blackBox);
-	teleportGun->init("TeleportGun", Vector3(0, 10, 0), 15, 1.5f, 2.0f, 5.0f, md3dDevice);
+	Vector3 gunSize(2.0, 1.5, 5.0);
+	teleportGun->init("TeleportGun", Vector3(0, 10, 0), 15, gunSize.x, gunSize.y, gunSize.z, md3dDevice);
+
+	//	Add parts to the gun
+	teleportGun->addPart("Body", "", Vector3(0,0,0), gunSize);
+	teleportGun->addPart("FrontHandle", "Body", Vector3(0, gunSize.y * 0.5f, gunSize.z * 0.3f),
+		Vector3(gunSize.x * 2.87f, gunSize.y * 0.25f, gunSize.y * 0.25f));
+	teleportGun->setRotX("FrontHandle", 0.785f);
+	teleportGun->addPart("Barrel1", "Body", Vector3(0, gunSize.y * 0.3f, 3.0f),
+		Vector3(gunSize.x * 0.4f, gunSize.y * 0.4f, 1.0));
+	teleportGun->addPart("Barrel2", "Barrel1", Vector3(0, gunSize.y * 0.3f * 0.4f, 0.585f),
+		Vector3(gunSize.y * 0.2f, gunSize.y * 0.2f, 0.37f));
+	teleportGun->addPart("TopHandleRight", "Body", Vector3(0.77f, 1.5f, -1.7f),
+		Vector3(0.2f, 1.0f, 0.2f));
+	teleportGun->addPart("TopHandleLeft", "Body", Vector3(-0.77f, 1.5f, -1.7f),
+		Vector3(0.2f, 1.0f, 0.2f));
+	teleportGun->addPart("TopHandleTop", "Body", Vector3(0.0f, 2.5f, -1.7f),
+		Vector3(1.74f, 0.2f, 0.2f));
+	teleportGun->addPart("LeftPanel", "Body", Vector3(-1.0f, 0.75f, -0.7f),
+		Vector3(0.75f, 0.1f, 3.0f));
+	teleportGun->setRotZ("LeftPanel", 1.57f);
+	teleportGun->addPart("RightPanel", "Body", Vector3(1.0f, 0.75f, -0.7f),
+		Vector3(0.75f, 0.1f, 3.0f));
+	teleportGun->setRotZ("RightPanel", -1.57f);
+	teleportGun->addPart("TopFrontPanel", "Body", Vector3(0.0f, 1.5f, 1.7f),
+		Vector3(1.1f, 0.1f, 1.0f));
+	teleportGun->addPart("TopMiddlePanel", "Body", Vector3(0.0f, 1.5f, 0.3f),
+		Vector3(1.1f, 0.1f, 1.0f));
+	teleportGun->addPart("TopBackPanel", "Body", Vector3(0.0f, 1.5f, -1.1f),
+		Vector3(1.1f, 0.1f, 1.0f));
+
 	player.setWeapon(teleportGun);
 	
 	//delete spotLight;
