@@ -10,7 +10,10 @@
 
 
 #include "Game2App.h"
-
+#include <fstream>
+#include <algorithm>
+using std::ifstream;
+using std::ofstream;
 
 
 
@@ -71,6 +74,7 @@ void Game2App::initApp()
 	menuItems.push_back("Options");
 	menuItems.push_back("Exit");
 	maxSelection = menuItems.size() - 1;
+	selectionMade = false;
 
 	srand(time(0));
 	left = Vector3(1,0,0);
@@ -130,6 +134,10 @@ void Game2App::initApp()
 	storySword.Initialize(md3dDevice, L"storySword.png");
 	storyLastLevel.Initialize(md3dDevice, L"storyLastLevel.png");
 	storyEnd.Initialize(md3dDevice, L"storyEnd.png");
+	optionsSplash.Initialize(md3dDevice, L"Options.png");
+	newHighScoreSplash.Initialize(md3dDevice, L"NewHighScore.png");
+	nonHighScoreSplash.Initialize(md3dDevice, L"NonHighScore.png");
+	highScoreTableSplash.Initialize(md3dDevice, L"HighScoresSplash.png");
 
 	wallDetectionIsOn = true;
 
@@ -314,6 +322,17 @@ void Game2App::initApp()
 	mfxSpotCount->SetInt(0);
 	mfxLightCount->SetInt(numberOfLights);
 	mfxTexVar->SetInt(0);
+
+	timeMultiplier = 27.0f;
+	healthMultiplier = 22.0f;
+	livesMultiplier = 57.0f;
+
+	healthRegenTimer = 0.0f;
+	regenPeriod = 0.2f;
+
+	difficulty = 0;
+
+	loadHighScores();
 }
 
 void Game2App::onResize()
@@ -340,6 +359,7 @@ void Game2App::updateScene(float dt)
 	//	Exit the game
 	if (keyPressed(VK_ESCAPE))
 	{
+		saveHighScores();
 		exit(0);
 	}
 	//if (keyPressed(PauseKey))
@@ -358,7 +378,7 @@ void Game2App::updateScene(float dt)
 		camPos = splashCamPos;
 
 		
-		if (gameTime > 7.0f || input->wasKeyPressed(AdvanceScreenKey))
+		if (gameTime > 2.7f || input->wasKeyPressed(AdvanceScreenKey))
 			gameState = MENU;
 		playState.level = 1;
 	}
@@ -378,13 +398,20 @@ void Game2App::updateScene(float dt)
 			selection = maxSelection;
 		if (selection > maxSelection)
 			selection = 0;
-
-		if (input->wasKeyPressed(VK_RETURN))
+		timer += dt;
+		if (timer > 0.5f && (input->wasKeyPressed(VK_RETURN) || selectionMade))
 		{
+			selectionMade = false;
+			timer = 0.0f;
+			input->clearAll();
 			switch(selection)
 			{
 			case 0:	//	Play
 				playState.level = 1;
+				playState.newLevel = true;
+				playState.completedLevel = false;
+				playState.livesRemaining = 3;
+				playTimer = 0.0f;
 				gameState = LEVELPREP;
 				break;
 			case 1:	//	Controls
@@ -397,9 +424,14 @@ void Game2App::updateScene(float dt)
 				gameState = OPTIONS;
 				break;
 			case 4:	//	Exit
+				saveHighScores();
 				exit(0);
 				break;
 			}
+		}
+		else
+		{
+			selectionMade = false;
 		}
 	}
 	else if (gameState == HOWTO) 
@@ -407,11 +439,106 @@ void Game2App::updateScene(float dt)
 		//change texture on splash to "how to" 	bool toLoading = false;
 		showSplash();
 		bool toLoading = false;
-		if (input->anyKeyPressed())
+		timer += dt;
+		if (timer > 0.5f && (input->anyKeyPressed() || input->getMouseLButton()))
 		{
 			gameState = MENU;
+			timer = 0.0f;
 		}
 	} 
+	else if (gameState == CONTROLS)
+	{
+		showSplash();
+		timer += dt;
+		if (timer > 0.5f && (input->anyKeyPressed() || input->getMouseLButton()))
+		{
+			gameState = MENU;
+			timer = 0.0f;
+		}
+	}
+	else if (gameState == OPTIONS)
+	{
+		showSplash();
+		timer += dt;
+		
+		long midPoint = (long)((MouseRect.right - MouseRect.left) * 0.57f);
+		long half = midPoint / 4;
+
+		optionRects.resize(3);
+		SetRect(&optionRects[0], midPoint - half, 160, midPoint + half, 200);
+		SetRect(&optionRects[1], midPoint - half, 280, midPoint + half, 320);
+		SetRect(&optionRects[2], midPoint - half, 360, midPoint + half, 400);
+
+		if (timer > 0.5f)
+		{
+			if (PtInRect(&optionRects[0], MousePos))
+			{
+				selection = 0;
+				if (input->getMouseLButton())
+				{
+					difficulty++;
+					if (difficulty > 2)
+						difficulty = 0;
+					timer = 0.0f;
+				}
+			}
+			else if (PtInRect(&optionRects[1], MousePos))
+			{
+				selection = 1;
+				if (input->getMouseLButton())
+				{
+					gameState = HIGHSCORETABLE;
+					timer = 0.0f;
+				}
+			}
+			else if (PtInRect(&optionRects[2], MousePos))
+			{
+				selection = 2;
+				if (input->getMouseLButton())
+				{
+					gameState = MENU;
+					timer = 0.0f;
+				}
+			}
+			
+		}
+	}
+	else if (gameState == HIGHSCORETABLE)
+	{
+		showSplash();
+		scoreRects.resize(3);
+		scoreRects[0].resize(highScores[0].size());
+		scoreRects[1].resize(highScores[1].size());
+		scoreRects[2].resize(highScores[2].size());
+		long easyLeft, easyRight, medLeft, medRight, hardLeft, hardRight, top, height;
+		top = 260;
+		height = 32;
+		easyLeft = 66;
+		easyRight = 222;
+		medLeft = 299;
+		medRight = 465;
+		hardLeft = 568;
+		hardRight = 740;
+
+		for (int i=0; i<scoreRects[0].size(); ++i)
+		{
+			SetRect(&scoreRects[0][i], easyLeft, top + i * height, easyRight, top + (i+1) * height);
+		}
+		for (int i=0; i<scoreRects[1].size(); ++i)
+		{
+			SetRect(&scoreRects[1][i], medLeft, top + i * height, medRight, top + (i+1) * height);
+		}
+		for (int i=0; i<scoreRects[2].size(); ++i)
+		{
+			SetRect(&scoreRects[2][i], hardLeft, top + i * height, hardRight, top + (i+1) * height);
+		}
+		timer += dt;
+		if (timer > 0.5f && (input->anyKeyPressed() || input->getMouseLButton()))
+		{
+			gameState = OPTIONS;
+			timer = 0.0f;
+		}
+	}
 	else if (gameState == INTRO) {
 		timer += dt;
 		showSplash();
@@ -456,13 +583,21 @@ void Game2App::updateScene(float dt)
 		timer += dt;
 		showSplash();
 		if (timer > 10.0f || input->wasKeyPressed(AdvanceScreenKey)) {
-			gameState = CREDITS;
+			gameState = RECORDSCORE;
+			playerGotHighScore = false;
 			timer = 0.0f;
 		}
 	}
 	else if (gameState == LEVELWIN) 
 	{
 		showSplash();
+		//	Record Level Stats
+		pair<float,pair<int, int>> timeHealthLives;
+		timeHealthLives.first = playTimer;
+		playTimer = 0.0f;
+		timeHealthLives.second.first = playState.health;
+		timeHealthLives.second.second = playState.livesRemaining;
+		levelTimeHealthLives.push_back(timeHealthLives);
 		playState.level += 1;
 		playState.health = 100;
 		playState.newLevel = true;
@@ -495,16 +630,82 @@ void Game2App::updateScene(float dt)
 		if (timer > 5.0f)
 		{
 			timer = 0.0f;
-			gameState = CREDITS;
+			gameState = RECORDSCORE;
+			playerGotHighScore = false;
 		}
 	} 
+	else if (gameState == RECORDSCORE || gameState == NEWHIGHSCORE || gameState == NONHIGHSCORE)
+	{
+		//	Calculate high score based on time taken,
+		//	health left over, and lives left over.
+		if (gameState == RECORDSCORE)
+		{
+			score = 0;
+			for (int i=0; i<levelTimeHealthLives.size(); ++i)
+			{
+				float t = levelTimeHealthLives[i].first;
+				int h = levelTimeHealthLives[i].second.first;
+				int l = levelTimeHealthLives[i].second.second;
+
+				int hScore = (100 * (l - 1) + h) * healthMultiplier;
+				int lScore = l * livesMultiplier + l;
+				float tMult = max(timeMultiplier / max((t - (15.0f + (i + 1.0f)*2.0f)), 1.0f), 1.0f);
+		
+				score += (hScore + lScore) * tMult;
+			}
+			for (int i=0; i<highScores[difficulty].size(); ++i)
+			{
+				if (score > highScores[difficulty][i].first)
+				{
+					playerGotHighScore = true;
+				}
+			}
+			if (highScores[difficulty].size() < 10)
+				playerGotHighScore = true;
+			if (playerGotHighScore)
+			{
+				gameState = NEWHIGHSCORE;
+			}
+			else
+				gameState = NONHIGHSCORE;
+		}
+		else if (gameState == NEWHIGHSCORE)
+		{
+			showSplash();
+			string in = input->getTextIn();
+			if (in == " ")
+				in = "_";
+			playerName += in;
+			if (playerName.size() > 0 && input->wasKeyPressed(VK_BACK))
+				playerName.pop_back();
+			if (input->wasKeyPressed(VK_RETURN))
+			{
+				gameState = CREDITS;
+				highScores[difficulty].push_back(pair<int, string>(score, playerName));
+				std::sort(highScores[difficulty].begin(), highScores[difficulty].end());
+				std::reverse(highScores[difficulty].begin(), highScores[difficulty].end());
+				if (highScores[difficulty].size() > 10)
+					highScores[difficulty].pop_back();
+				saveHighScores();
+			}
+		}
+		else if (gameState == NONHIGHSCORE)
+		{
+			showSplash();
+			if (input->anyKeyPressed())
+			{
+				gameState = CREDITS;
+			}
+		}
+
+	}
 	else if (gameState == CREDITS) 
 	{
 		//display the Credits Splash screen
 		showSplash();
 		
 		timer += dt;
-		if (timer > 7.0f)
+		if (timer > 7.0f || input->anyKeyPressed() || input->getMouseLButton())
 		{
 			timer = 0.0f;
 			gameState = TITLE;
@@ -513,7 +714,6 @@ void Game2App::updateScene(float dt)
 	else if (gameState == LOADING)
 	{
 		showSplash();
-		playState.level = 6;
 		if (playState.level == 1)
 		{
 			if (!level1)
@@ -677,9 +877,10 @@ void Game2App::updateScene(float dt)
 	}
 	else if (gameState == PLAY) 
 	{
-
+		playTimer += dt;
 		if (playState.newLevel)
 		{
+			input->clearAll();
 			switch(playState.level)
 			{
 			case 1:
@@ -705,6 +906,7 @@ void Game2App::updateScene(float dt)
 				break;
 			}
 			level->reset();
+			setDifficultySettings();
 			player.setLevel(level);
 			numberOfSpotLights = level->spotLights.size();
 			mfxSpotCount->SetInt(numberOfSpotLights);
@@ -751,7 +953,7 @@ void Game2App::updateScene(float dt)
 				}
 				if (spotted)
 				{
-					playState.health -= 10 * (dt / (l / e->getRange()));
+					playState.health -= (10 + (difficulty *3.0f)) * (dt / (l / e->getRange()));
 				}
 			}
 		}
@@ -783,7 +985,7 @@ void Game2App::updateScene(float dt)
 				}
 				if (spotted)
 				{
-					playState.health -= 10 * (dt / (l / t->getRange()));
+					playState.health -= (10 + (difficulty *3.0f)) * (dt / (l / t->getRange()));
 				}
 			}
 		}
@@ -794,7 +996,13 @@ void Game2App::updateScene(float dt)
 		}
 		if (!spotted)
 		{
-			playState.health += dt * 25.0f;
+			healthRegenTimer += dt;
+			if (healthRegenTimer > regenPeriod)
+			{
+				healthRegenTimer = 0.0f;
+				playState.health++;
+			}
+			
 			if (playState.health > 100)
 				playState.health = 100;
 		}
@@ -1093,9 +1301,17 @@ void Game2App::drawScene()
 
 	}
 	//Draw splash screen
-	if (gameState == TITLE || gameState == MENU)
+	if (gameState == TITLE || gameState == MENU || gameState == OPTIONS)
 	{
 		mfxDiffuseMapVar->SetResource(titleSplash.GetTexture());
+	}
+	if (gameState == CONTROLS)
+	{
+		mfxDiffuseMapVar->SetResource(controlsSplash.GetTexture());
+	}
+	if (gameState == OPTIONS)
+	{
+		mfxDiffuseMapVar->SetResource(optionsSplash.GetTexture());
 	}
 	if (gameState == LOADING)
 	{
@@ -1104,6 +1320,10 @@ void Game2App::drawScene()
 	if (gameState == GAMEWIN)
 	{
 		mfxDiffuseMapVar->SetResource(winSplash.GetTexture());
+	}
+	if (gameState == GAMEOVER)
+	{
+		mfxDiffuseMapVar->SetResource(gameOverSplash.GetTexture());
 	}
 	if (gameState == HOWTO)
 	{
@@ -1123,6 +1343,18 @@ void Game2App::drawScene()
 	}
 	if (gameState == ENDSTORY) {
 		mfxDiffuseMapVar->SetResource(storyEnd.GetTexture());
+	}
+	if (gameState == HIGHSCORETABLE)
+	{
+		mfxDiffuseMapVar->SetResource(highScoreTableSplash.GetTexture());
+	}
+	if (gameState == NEWHIGHSCORE)
+	{
+		mfxDiffuseMapVar->SetResource(newHighScoreSplash.GetTexture());
+	}
+	if (gameState == NONHIGHSCORE)
+	{
+		mfxDiffuseMapVar->SetResource(nonHighScoreSplash.GetTexture());
 	}
 		//Identity(&mVP);
 	if (gameState != PLAY)
@@ -1198,6 +1430,8 @@ void Game2App::drawScene()
 
 	/////Text Drawing Section
 	// We specify DT_NOCLIP, so we do not care about width/height of the rect.
+	std::wstring text;
+	std::wostringstream outs;
 	RECT Health = {640, 8, 0, 0};
 	RECT Stamina = {460, 8, 0, 0};
 	RECT R1 = {0, 0, 800, 600};
@@ -1209,13 +1443,20 @@ void Game2App::drawScene()
 	menuRects.resize(menuItems.size());
 	for (int i=0; i<menuRects.size(); ++i)
 	{
-		SetRect(&menuRects[i], midPoint - half, firstMenuY, midPoint + half, firstMenuY + 70);
-		firstMenuY += 77;
+		SetRect(&menuRects[i], midPoint - half, firstMenuY, midPoint + half, firstMenuY + 47);
+		firstMenuY += 57;
 	}
 	if (gameState == MENU)
 	{
 		for (int i=0; i<menuRects.size(); ++i)
 		{
+			if (PtInRect(&menuRects[i], MousePos))
+			{
+				selection = i;
+				if (input->getMouseLButton())
+					selectionMade = true;
+			}
+			
 			std::wstring item;
 			std::wostringstream menuOut;
 			menuOut << menuItems[i].c_str();
@@ -1223,9 +1464,80 @@ void Game2App::drawScene()
 			mFont->DrawText(0, item.c_str(), -1, &menuRects[i], DT_CENTER | DT_VCENTER, (selection == i ? White : Black));
 		}
 	}
+	if (gameState == OPTIONS)
+	{
+		std::wstring diffText, scoreText;
+		std::wostringstream optOutS, scoreOutS;
+		optOutS << (difficulty == 0 ? "Easy" : difficulty == 1 ? "Medium" : "Hard");
+		scoreOutS << "Click To See";
+		diffText = optOutS.str();
+		scoreText = scoreOutS.str();
+		if (optionRects.size() > 0)
+		{
+			mFont->DrawText(0, diffText.c_str(), -1, &optionRects[0], DT_CENTER | DT_VCENTER, (selection == 0 ? White : Gray));
+			mFont->DrawText(0, scoreText.c_str(), -1, &optionRects[1], DT_CENTER | DT_VCENTER, (selection == 1 ? White : Gray));
+			outs.clear();
+			outs.str(L"");
+			outs << "Go Back";
+			text = outs.str();
+			mFont->DrawText(0, text.c_str(), -1, &optionRects[2], DT_CENTER | DT_VCENTER, (selection == 2 ? White : Gray));
+		}
+	}
+	if (gameState == HIGHSCORETABLE)
+	{
+		std::wstring entry;
+		std::wostringstream eOutS;
+		for (int d=0; d<scoreRects.size(); ++d)
+		{
+			for (int i=0; i<scoreRects[d].size(); ++i)
+			{
+				eOutS.clear();
+				eOutS.str(L"");
+				eOutS << highScores[d][i].second.c_str() << " - " << highScores[d][i].first;
+				entry = eOutS.str();
+				mFont->DrawText(0, entry.c_str(), -1, &scoreRects[d][i], DT_NOCLIP | DT_CENTER | DT_VCENTER, White);
+			}
+		}
+	}
+	if (gameState == NEWHIGHSCORE)
+	{
+		RECT r = {252, 344, 541, 411};
+		RECT nR = {437, 502, 683, 565};
+		text = L"";
+		outs.clear();
+		outs << score << " points";
+		text = outs.str();
+		mFont->DrawText(0, text.c_str(), -1, &r, DT_CENTER | DT_VCENTER, White);
+		outs.clear();
+		outs.str(L"");
+		outs << playerName.c_str();
+		text = outs.str();
+		mFont->DrawText(0, text.c_str(), -1, &nR, DT_NOCLIP | DT_VCENTER, White);
+	}
+	if (gameState == NONHIGHSCORE)
+	{
+		RECT r = {237, 203, 511, 374};
+		text = L"";
+		outs.clear();
+		outs.str(L"");
+		outs << score << " points";
+		text = outs.str();
+		mFont->DrawText(0, text.c_str(), -1, &r, DT_CENTER | DT_VCENTER, White);
+	}
+	if (gameState == CREDITS)
+	{
+		RECT r = {0, 70, 800, 600};
+		text = L"";
+		outs.clear();
+		outs.str(L"");
+		outs << "Credits\n" << "Produced By:\n\nAndrew Miller\nSteven Patterson\nDaniel Ecker\n";
+		outs << "\n\nMade with love\n&\nsleepless nights.\n";
+		text = outs.str();
+		mFont->DrawText(0, text.c_str(), -1, &r, DT_CENTER | DT_VCENTER, Black);
+	}
 
-	std::wostringstream outs;  
-	
+	outs.clear();
+	outs.str(L"");
 	outs.precision(6);
 	outs << "Lives Remaining: " << playState.livesRemaining << "\n";
 	outs << "Pick ups Left: " << playState.pickUpsRemaining << "\n";
@@ -1236,13 +1548,12 @@ void Game2App::drawScene()
 	if (spotted)
 		outs << "You are spotted!\n";
 	
-	string Hud = score.getString();
 	
 
 	/*outs << score.getString() << L"\n";
 	outs << L"Blobs Available: " << ammo << L"\n";
 	outs << L"Gallons Left: " << lives;*/
-	std::wstring text = outs.str();
+	text = outs.str();
 	if (gameState == PLAY)
 		mFont->DrawText(0, text.c_str(), -1, &R1, DT_NOCLIP, White);
 	//timesNew.draw(Hud, Vector2(5, 5));
@@ -1397,4 +1708,65 @@ void Game2App::showSplash()
 	splashScreenIsUp = true;
 	camPos = splashCamPos;
 	target = splashTarget;
+}
+bool Game2App::loadHighScores()
+{
+	string filename = "highScores.dat";
+
+	ifstream fin;
+	fin.open(filename);
+	if (fin.fail())
+	{
+		highScores.resize(3);
+		return false;
+	}
+
+	highScores.resize(3);
+	for (int d=0; d<3; ++d)
+	{
+		highScores[d].clear();
+		int count;
+		fin >> count;
+		for (int i=0; i<count; ++i)
+		{
+			pair<int, string> entry;
+			fin >> entry.first >> entry.second;
+			highScores[d].push_back(entry);
+		}
+		std::sort(highScores[d].begin(), highScores[d].end());
+		std::reverse(highScores[d].begin(), highScores[d].end());
+	}
+
+}
+
+void Game2App::saveHighScores()
+{
+	string filename = "highScores.dat";
+
+	ofstream fout;
+	fout.open(filename);
+	if (fout.fail())
+		return;
+	for (int d=0; d<3; ++d)
+	{
+		fout << highScores[d].size() << "\n";
+		for (int i=0; i<highScores[d].size(); ++i)
+		{
+			fout << highScores[d][i].first << " " << highScores[d][i].second << "\n";
+		}
+		fout << "\n";
+	}
+}
+
+void Game2App::setDifficultySettings()
+{
+	for (int i=0; i<level->enemies.size(); ++i)
+	{
+		level->enemies[i]->spotLight->range = 300.0f + 27.0f * difficulty;
+	}
+	for (int i=0; i<level->towers.size(); ++i)
+	{
+		level->towers[i]->spotLight->range = 300.0f + 27.0f * difficulty;
+	}
+	regenPeriod = 0.2f + 0.4f * difficulty;
 }

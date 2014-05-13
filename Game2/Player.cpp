@@ -289,6 +289,10 @@ void Player::update(float dt)
 			}
 		}
 	}
+	else
+	{
+		teleportLight->range = 0.0f;
+	}
 	//	Sword Mechanics
 	if (weapon && weapon->getName() == "Sword")
 	{
@@ -441,8 +445,11 @@ void Player::update(float dt)
 		factor *= -1;
 	}
 	//if (keyPressed(VK_MENU)) {
+	if (weapon && weapon->getName() == "TeleportGun")
+	{
 		teleportLight->range = 1000.0f;
 		teleportLight->spotPow = 49.0f / (teleportCooldownCounter + 0.01f / teleportCooldownTime);
+	}
 	//} else {
 		//teleportLight->range = 0.0f;
 	//}
@@ -511,34 +518,31 @@ void Player::update(float dt)
 	leftArm->setRotX(ToRadian(180));
 	rightForearm->setRotX(ToRadian(-20));
 	leftForearm->setRotX(ToRadian(-20));
-	if (!colliding)
+	if (moving && !sprinting)
+	{	//swing arms back and forth if moving
+		armRot = sin(elapsed * limbSpeed);
+		armRange = 10;
+		armOffset = 0;
+		phase = 0.0f;
+		forearmRot = sin(elapsed * limbSpeed + phase);
+		forearmRange = 20;
+		forearmOffset = 10;
+	}
+	else if (moving && sprinting)
 	{
-		if (moving && !sprinting)
-		{	//swing arms back and forth if moving
-			armRot = sin(elapsed * limbSpeed);
-			armRange = 10;
-			armOffset = 0;
-			phase = 0.0f;
-			forearmRot = sin(elapsed * limbSpeed + phase);
-			forearmRange = 20;
-			forearmOffset = 10;
-		}
-		else if (moving && sprinting)
-		{
-			armRot = sin(elapsed * limbSpeed);
-			armRange = 30;
-			armOffset = 10;
-			phase = 0.0f;
-			forearmRot = sin(elapsed * limbSpeed + phase);
-			forearmRange = 50;
-			forearmOffset = 20;
-		}
-		else
-		{	//move arms by side if not moving
-			armRot = 0;
-			armRange = 0;
-			armOffset = 0;
-		}
+		armRot = sin(elapsed * limbSpeed);
+		armRange = 30;
+		armOffset = 10;
+		phase = 0.0f;
+		forearmRot = sin(elapsed * limbSpeed + phase);
+		forearmRange = 50;
+		forearmOffset = 20;
+	}
+	else
+	{	//move arms by side if not moving
+		armRot = 0;
+		armRange = 0;
+		armOffset = 0;
 	}
 
 	rightArm->setRotX(ToRadian(normPos + (armRot * armRange) + armOffset));
@@ -593,6 +597,8 @@ void Player::update(float dt)
 			weapon->update(dt);
 		}
 	}
+	else
+		teleportLight->range = 0.0f;
 
 	//Update the bodyparts
 	head->update(dt);

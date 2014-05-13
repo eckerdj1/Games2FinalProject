@@ -157,6 +157,7 @@
     <None Include="Credits.png" />
     <None Include="Game Over Screen.png" />
     <None Include="Game Win.png" />
+    <None Include="highScores.dat" />
     <None Include="How to Play.png" />
     <None Include="hudLighting.fx" />
     <None Include="level1.txt" />

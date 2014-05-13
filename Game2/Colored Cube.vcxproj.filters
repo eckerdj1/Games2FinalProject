@@ -250,5 +250,8 @@
     <None Include="LevelTeleport2.txt">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="highScores.dat">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

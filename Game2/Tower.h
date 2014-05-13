@@ -41,7 +41,6 @@ public:
 	void addAiRot(Vector2 rotData);
 	float getRange() {return range;}
 	
-private:
 	string name;
 	BodyPart* base;
 	BodyPart* column;
@@ -49,6 +48,7 @@ private:
 
 	Light* spotLight;
 
+private:
 	float range;
 
 	Vector3 position;

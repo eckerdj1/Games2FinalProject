@@ -23,7 +23,7 @@ using std::vector;
 using std::time;
 using std::srand;
 using std::rand;
-
+using std::pair;
 
 #define toString(x) Text::toString(x)
 
@@ -49,7 +49,9 @@ struct PlayState {
 	}
 };
 
-enum GameState {PLAY, LEVELPREP, TITLE, HOWTO, CONTROLS, OPTIONS, MENU, LEVELWIN, GAMEWIN, LEVELLOSE, GAMEOVER, CREDITS, LOADING, INTRO, GUN, SWORD, REMINDER, LASTLEVEL, ENDSTORY};
+enum GameState {PLAY, LEVELPREP, TITLE, HOWTO, CONTROLS, OPTIONS, MENU, NEWHIGHSCORE, NONHIGHSCORE,
+	HIGHSCORETABLE, RECORDSCORE, LEVELWIN, GAMEWIN, LEVELLOSE, GAMEOVER,
+	CREDITS, LOADING, INTRO, GUN, SWORD, REMINDER, LASTLEVEL, ENDSTORY};
 
 class Game2App : public D3DApp
 {
@@ -80,7 +82,11 @@ private:
 	void buildHudFX();
 	void buildVertexLayouts();
 	void setNewObstacleCluster();
+
+	bool loadHighScores();
+	void saveHighScores();
  
+	void setDifficultySettings();
 private:
 
 	vector<GameObject> fallingBlocks;
@@ -125,6 +131,7 @@ private:
 	//	Menu Stuff
 	int selection;
 	int maxSelection;
+	bool selectionMade;
 	vector<string> menuItems;
 
 
@@ -167,7 +174,6 @@ private:
 
 	float totalDist;
 	bool distSet;
-	Score score;
 
 	bool gameOver;
 	bool spotted;
@@ -194,7 +200,7 @@ private:
 
 	TextureClass floorTexMap, floorSpecMap;
 
-	TextureClass titleSplash, controlsSplash, howToSplash, winSplash;
+	TextureClass titleSplash, controlsSplash, howToSplash, winSplash, optionsSplash;
 	TextureClass creditsSplash, loadSplash, gameOverSplash, splashSpecMap;
 	TextureClass storyIntro, storyGun, storySword, storyLastLevel, storyEnd;
 
@@ -252,5 +258,26 @@ private:
 	bool audioNotStarted;
 	bool highwayNotStarted;
 
+	int difficulty;
+
+	vector<vector<pair<int, string>>> highScores;
+
+	int score;
+	bool playerGotHighScore;
+	float playTimer;
+
+	float healthRegenTimer;
+	float regenPeriod;
+
+	float timeMultiplier, healthMultiplier, livesMultiplier;
+
+	TextureClass newHighScoreSplash, nonHighScoreSplash, highScoreTableSplash;
+
+	
+	vector<RECT> optionRects;
+	vector<vector<RECT>> scoreRects;
+	vector<pair<float,pair<int, int>>> levelTimeHealthLives;
+
+	string playerName;
 
 };

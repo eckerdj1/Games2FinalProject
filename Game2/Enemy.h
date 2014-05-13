@@ -39,7 +39,6 @@ public:
 
 	void reset();
 
-private:
 	string name;
 	BodyPart* torso;
 	BodyPart* head;
@@ -49,6 +48,7 @@ private:
 
 	Box* b;
 	
+private:
 	Vector3 position;
 	Vector3 direction;
 	Vector3 lastLoc;
