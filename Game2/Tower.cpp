@@ -54,32 +54,22 @@ void Tower::buildBody() {
 
 	Vector3 bPos = position;
 	bPos = Vector3(0,0,0);
-	Box * b = new Box();
-	b ->init(device, width*2, height/15, depth*2, DarkRed, DarkRed);
-	b->setDiffuseMap(diffuseMapVar);
-	base->init("base", b, bPos, direction, Vector3(width*2, height/15, depth*2), speed);
+	base->init("base", box, bPos, direction, Vector3(width*2, height/15, depth*2), speed);
 	base->setBody(this);
 
 	Vector3 cPos = position;
 	//cPos.y += height/2;
-	b = new Box();
-	b ->init(device, width*.75, height, depth*.75, Gray, Gray);
-	b->setDiffuseMap(diffuseMapVar);
-	column->init("column", b, cPos, direction, Vector3(width*.75, height, depth*.75), speed);
+	column->init("column", box, cPos, direction, Vector3(width*.75, height, depth*.75), speed);
 	column->setBody(this);
 
 	Vector3 ePos = position;
 	ePos.y += height;
-	b = new Box();
-	b ->init(device, width*.80, width*.80, depth*.80, DarkRed, DarkRed);
-	b->setDiffuseMap(diffuseMapVar);
-	eye->init("eye", b, ePos, direction, Vector3(width*.80, width*.80, depth*.80), speed);
+	eye->init("eye", box, ePos, direction, Vector3(width*.80, width*.80, depth*.80), speed);
 	eye->setBody(this);
 
 	base->addChild(column);
 	base->addChild(eye);
 
-	b = 0;
 }
 
 void Tower::update(float dt) {

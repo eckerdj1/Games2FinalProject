@@ -48,6 +48,8 @@ public:
 
 	Light* spotLight;
 
+	void attachBox(Box* b) {box = b;}
+
 private:
 	float range;
 
@@ -73,5 +75,7 @@ private:
 
 	float limbSpeed;
 	ID3D10Device* device;
+
+	Box* box;
 
 };
