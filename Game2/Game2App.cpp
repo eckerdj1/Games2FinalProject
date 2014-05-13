@@ -219,6 +219,7 @@ void Game2App::initApp()
 	level3 = 0;
 	level4 = 0;
 	level5 = 0;
+	level6 = 0;
 	numberOfSpotLights = 30; 
 		
 	target = splashTarget;
@@ -367,6 +368,10 @@ void Game2App::updateScene(float dt)
 				if (level5 == 0)
 					toLoading = true;
 				break;
+			case 6:
+				if (level6 == 0)
+					toLoading = true;
+				break;
 			}
 			if (toLoading)
 			{
@@ -384,7 +389,7 @@ void Game2App::updateScene(float dt)
 		playState.level += 1;
 		playState.livesRemaining = 3;
 		playState.newLevel = true;
-		if (playState.level > 5) 
+		if (playState.level > 6) 
 		{
 			gameState = GAMEWIN;
 		} 
@@ -411,6 +416,10 @@ void Game2App::updateScene(float dt)
 				break;
 			case 5:
 				if (level5 == 0)
+					toLoading = true;
+				break;
+			case 6:
+				if (level6 == 0)
 					toLoading = true;
 				break;
 			}
@@ -479,6 +488,10 @@ void Game2App::updateScene(float dt)
 			if (level5 == 0)
 				toLoading = true;
 			break;
+		case 6:
+			if (level6 == 0)
+				toLoading = true;
+			break;
 		}
 		if (toLoading)
 		{
@@ -491,6 +504,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == LOADING)
 	{
 		showSplash();
+		playState.level = 6;
 		if (playState.level == 1)
 		{
 			if (!level1)
@@ -556,6 +570,19 @@ void Game2App::updateScene(float dt)
 
 			level = level5;
 		}
+		if (playState.level == 6) 
+		{
+			if (!level6)
+			{
+				level6 = new Level(md3dDevice);
+				level6->setPlayer(&player);
+				level6->attachEnemyBox(enemyBox);
+				level6->attachWallBox(wallBox);
+				level6->fillLevel("levelTeleport2.txt");
+			}
+
+			level = level6;
+		}
 		level->reset();
 
 		level->setDiffuseMap(mfxDiffuseMapVar);
@@ -589,6 +616,9 @@ void Game2App::updateScene(float dt)
 				break;
 			case 5:
 				level = level5;
+				break;
+			case 6:
+				level = level6;
 				break;
 			}
 			level->reset();

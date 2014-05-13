@@ -159,7 +159,7 @@
     <None Include="hudLighting.fx" />
     <None Include="level1.txt" />
     <None Include="level2.txt" />
-    <None Include="Level2Teleport.txt" />
+    <None Include="LevelTeleport2.txt" />
     <None Include="level3.txt" />
     <None Include="levelBackstab1.txt" />
     <None Include="levelTeleport1.txt" />

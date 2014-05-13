@@ -133,6 +133,7 @@ private:
 	Level* level3;
 	Level* level4;
 	Level* level5;
+	Level* level6;
 	Floor floor;
 	PlayState playState;
 	GameState gameState;

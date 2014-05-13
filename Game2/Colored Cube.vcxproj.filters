@@ -241,7 +241,7 @@
     </None>
     <None Include="Particles.fx" />
     <None Include="hudLighting.fx" />
-    <None Include="Level2Teleport.txt">
+    <None Include="LevelTeleport2.txt">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
