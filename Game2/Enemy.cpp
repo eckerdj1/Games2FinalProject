@@ -13,6 +13,7 @@ Enemy::Enemy()
 	gameTime = 0;
 	range = 40;
 	elapsed = 0;
+	active = true;
 
 	aiMode = RANDOM;
 	xBounds = Vector2(-10.0f, 10.0f);
@@ -141,9 +142,16 @@ void Enemy::buildBody()
 	leftLeg->addChild(leftShin);
 }
 
+void Enemy::turnOffLight()
+{
+	spotLight->range = 0;
+}
+
 void Enemy::update(float dt)
 {
 	//No keyboard input, just preset patterns
+	if (!active)
+		return;
 	gameTime += dt;
 	elapsed += dt;
 	
@@ -346,6 +354,8 @@ void Enemy::update(float dt)
 
 void Enemy::draw(Matrix mVP)
 {
+	if (!active)
+		return;
 	D3D10_TECHNIQUE_DESC techDesc;
     mTech->GetDesc( &techDesc );
     for(UINT p = 0; p < techDesc.Passes; ++p)
@@ -363,4 +373,10 @@ void Enemy::setDiffuseMap(ID3D10EffectShaderResourceVariable* var)
 void Enemy::setPosition(Vector3 pos)
 {
 	position = pos;
+}
+
+void Enemy::reset()
+{
+	spotLight->range = 300.0f;
+	setActive();
 }

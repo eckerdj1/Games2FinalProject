@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Game2App.h"
+#include "Level.h"
 
 Player::Player()
 {
@@ -33,6 +34,8 @@ Player::Player()
 	onCooldown = false;
 	teleportCooldownTime = 1.0f;
 	teleportCooldownCounter = 1.0f;
+	maxStamina = 5.0f;
+	stamina = maxStamina;
 }
 
 Player::~Player()
@@ -237,6 +240,7 @@ void Player::update(float dt)
 	//	Teleportation Code
 	if (weapon && weapon->getName() == "TeleportGun")
 	{
+		stamina = 0.0f;
 		float distSquared = (xDist * xDist + yDist * yDist);
 		Vector3 jumpDir = direction * teleportFloat * teleportChargeCounter;// sqrt(distSquared) / teleportFloat;
 
@@ -281,6 +285,51 @@ void Player::update(float dt)
 			if (teleportCooldownCounter > teleportCooldownTime)
 			{
 				onCooldown = false;
+			}
+		}
+	}
+	//	Sword Mechanics
+	if (weapon && weapon->getName() == "Sword")
+	{
+		swingingSword = false;
+		if (input->getMouseLButton() && hasStamina)
+		{
+			//	Swing sword
+			stamina -= dt * 1.347f;
+			float rot = sin(gameTime * limbSpeed);
+			float offset = 30;
+			weapon->setRotX("Body", ToRadian(rot * 40 + offset));
+			swingingSword = true;
+			//  Check for enemies
+			for (int i=0; i<level->enemies.size(); ++i)
+			{
+				Enemy* e = level->enemies[i];
+				Vector3 dirToEnemy = e->getPosition() - position;
+				float l = Length(&dirToEnemy);
+				//	If the enemy is in front of me and close enough
+				if (Dot(&direction, &dirToEnemy) > 0.837f && l < 9.7f)
+				{
+					if (Dot(&direction, &e->getDirection()) > 0.87f)
+					{
+						e->setInactive();
+						e->turnOffLight();
+					}
+				}
+			}
+			if (stamina <= 0.0f)
+				hasStamina = false;
+		}
+		else
+		{
+			stamina += dt;
+			if (stamina > maxStamina)
+				stamina = maxStamina;
+			if (!hasStamina)
+			{
+				if (stamina > maxStamina / 2.0f)
+				{
+					hasStamina = true;
+				}
 			}
 		}
 	}
@@ -525,9 +574,12 @@ void Player::update(float dt)
 		}
 		if (weapon->getName() == "Sword") {
 			//move arm to hold sword
+			if (!swingingSword)
+				weapon->setRotX("Body", ToRadian(30));
 			rightArm->setRotX(ToRadian(180));
+			rightArm->setRotZ(ToRadian(-10));
 			rightForearm->setRotX(ToRadian(-90));
-			rightForearm->setRotZ(ToRadian(32));
+			rightForearm->setRotZ(ToRadian(36));
 			
 			float weaponTheta = dirTheta + 0.50f;	
 			Vector3 weaponDir(0,0,0);

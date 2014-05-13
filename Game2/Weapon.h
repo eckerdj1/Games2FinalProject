@@ -44,13 +44,16 @@ public:
 	void setRotX(string partName, float rot);
 	void setRotY(string partName, float rot);
 	void setRotZ(string partName, float rot);
+	//void setWeaponRotX(float rot);
+	//void setWeaponRotZ(float rot);
+	//void setWeaponRotY(float rot);
 
 	string getName() {return name;}
+	vector<BodyPart*> parts;
 
 private:
 	string name;
 
-	vector<BodyPart*> parts;
 
 	float speed;
 

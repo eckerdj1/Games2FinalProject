@@ -20,6 +20,7 @@
 #define Length D3DXVec3Length
 #define keyPressed(x) GetAsyncKeyState(x)
 #define Color3(x, y, z) D3DXCOLOR(x, y, z, 1.0f)
+#define Dot D3DXVec3Dot
 
 //-----------------------------------------------
 // Useful macros
