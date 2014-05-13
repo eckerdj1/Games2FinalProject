@@ -62,12 +62,17 @@ struct PlayState {
 	bool completedLevel;
 	bool newLevel;
 	int livesRemaining;
-	PlayState(){}
+	int health;
+	PlayState()
+	{
+		health = 100;
+	}
 	PlayState(int l, int pUR, bool cL) {
 		level = l;
 		pickUpsRemaining = pUR;
 		completedLevel = cL;
 		newLevel = true;
+		health = 100;
 	}
 };
 

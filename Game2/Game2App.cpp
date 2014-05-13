@@ -441,6 +441,7 @@ void Game2App::updateScene(float dt)
 		showSplash();
 		playState.level += 1;
 		playState.livesRemaining = 3;
+		playState.health = 100;
 		playState.newLevel = true;
 		if (playState.level > 6) 
 		{
@@ -512,11 +513,8 @@ void Game2App::updateScene(float dt)
 		showSplash();
 		// change camera to point at game over quad
 		timer += dt;
-		activeMessage = true;
-		message = L"Game Over";
 		if (timer > 5.0f)
 		{
-			activeMessage = false;
 			timer = 0.0f;
 			gameState = CREDITS;
 		}
@@ -525,46 +523,13 @@ void Game2App::updateScene(float dt)
 	{
 		//display the Credits Splash screen
 		showSplash();
-		playState.level = 1;
-		playState.newLevel = true;
-		playState.livesRemaining = 3;
-		playState.pickUpsRemaining = level->pickups.size();
-
-		bool toLoading = false;
-		switch(playState.level)
+		
+		timer += dt;
+		if (timer > 7.0f)
 		{
-		case 1:
-			if (level1 == 0)
-				toLoading = true;
-			break;
-		case 2:
-			if (level2 == 0)
-				toLoading = true;
-			break;
-		case 3:
-			if (level3 == 0)
-				toLoading = true;
-			break;
-		case 4:
-			if (level4 == 0)
-				toLoading = true;
-			break;
-		case 5:
-			if (level5 == 0)
-				toLoading = true;
-			break;
-		case 6:
-			if (level6 == 0)
-				toLoading = true;
-			break;
+			timer = 0.0f;
+			gameState = TITLE;
 		}
-		if (toLoading)
-		{
-			gameState = LOADING;
-			splashScreenIsUp = true;
-		}
-		else 
-			gameState = PLAY;
 	} 
 	else if (gameState == LOADING)
 	{
@@ -707,6 +672,7 @@ void Game2App::updateScene(float dt)
 			player.setPosition(level->playerLoc * level->enlargeByC);
 			playState.newLevel = false;
 			playState.pickUpsRemaining = level->pickups.size();
+			playState.health = 100;
 		}
 		Vector3 oldPlayerPos = player.getPosition();
 		vector<Vector3> oldPerimeter;
@@ -742,6 +708,10 @@ void Game2App::updateScene(float dt)
 						}
 					}
 				}
+				if (spotted)
+				{
+					playState.health -= 10 * (dt / (l / e->getRange()));
+				}
 			}
 		}
 		for (int i=0; i<level->towers.size(); ++i)
@@ -770,12 +740,22 @@ void Game2App::updateScene(float dt)
 						}
 					}
 				}
+				if (spotted)
+				{
+					playState.health -= 10 * (dt / (l / t->getRange()));
+				}
 			}
 		}
 		if(spotted && spotCounter == 0) {
 			spotCounter += 1.37f;
 			audio->playCue(ALARM);
 			//playState.livesRemaining--;
+		}
+		if (!spotted)
+		{
+			playState.health += dt * 20.0f;
+			if (playState.health > 100)
+				playState.health = 100;
 		}
 		spotCounter -= dt;
 		if (spotCounter < 0.0f)
@@ -822,6 +802,14 @@ void Game2App::updateScene(float dt)
 		if (playState.livesRemaining == 0)
 		{
 			gameState = GAMEOVER;
+		}
+		if (playState.health <= 0)
+		{
+			playState.livesRemaining--;
+			level->reset();
+			playState.health = 100;
+			playState.pickUpsRemaining = level->pickups.size();
+			player.setPosition(level->playerLoc * level->enlargeByC);
 		}
 
 		CameraDirection.x = sinf(camTheta);
@@ -1126,13 +1114,9 @@ void Game2App::drawScene()
 	std::wostringstream outs;  
 	
 	outs.precision(6);
-	outs << "Lives Remaining: " << playState.livesRemaining;
-	outs << "   MousePos X: "  << D3DApp::MousePos.x << "  Y: " << D3DApp::MousePos.y << "\n";
-	outs << "Pick ups Left: " << playState.pickUpsRemaining;
-	outs << "  Teleport Charge Counter: " << player.teleportChargeCounter << "\n";
-	outs << "TargetRight: " << targetRight.x << "   " << targetRight.y << "   " << targetRight.z << "\n";
-	outs << "TargetUp: " << targetUp.x << "   " << targetUp.y << "   " << targetUp.z << "\n";
-	outs << "QuadRotX: " << teleCharge.rotX << "\n";
+	outs << "Lives Remaining: " << playState.livesRemaining << "\n";
+	outs << "Pick ups Left: " << playState.pickUpsRemaining << "\n";
+	outs << "Health: " << playState.health << "\n";
 	//outs << "Game Time: " << mTimer.getGameTime() << "\n";
 	//outs << "CameraPos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << "\n";
 	//outs << "Target: " << target.x << ", " << target.y << ", " << target.z << "\n";
