@@ -547,6 +547,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == LOADING)
 	{
 		showSplash();
+		playState.level = 6;
 		if (playState.level == 1)
 		{
 			if (!level1)
@@ -1175,7 +1176,8 @@ void Game2App::drawScene()
 
 	/////Text Drawing Section
 	// We specify DT_NOCLIP, so we do not care about width/height of the rect.
-	RECT R = {100, 5, 0, 0};
+	RECT Health = {640, 8, 0, 0};
+	RECT Stamina = {460, 8, 0, 0};
 	RECT R1 = {0, 0, 800, 600};
 	RECT R2 = {0, 540, 800, 600};
 
@@ -1221,6 +1223,14 @@ void Game2App::drawScene()
 	if (activeMessage)
 	{
 		mFont->DrawText(0, message.c_str(), -1, &R2, DT_CENTER | DT_VCENTER, White);
+	}
+	if (gameState == PLAY) {
+		mFont->DrawText(0, L"Health", -1, &Health, DT_NOCLIP, Gray);
+		if (playState.level >= 3 && playState.level <= 4) {
+			mFont->DrawText(0,  L"Stamina", -1, &Stamina, DT_NOCLIP, Gray);
+		} else if (playState.level >= 5 && playState.level <= 6) {
+			mFont->DrawText(0,  L"Charge", -1, &Stamina, DT_NOCLIP, Gray);
+		}
 	}
 	
 
