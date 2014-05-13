@@ -49,7 +49,7 @@ struct PlayState {
 	}
 };
 
-enum GameState {PLAY, TITLE, HOWTO, LEVELWIN, GAMEWIN, LEVELLOSE, GAMEOVER, CREDITS, LOADING, INTRO, GUN, SWORD, REMINDER, LASTLEVEL, ENDSTORY};
+enum GameState {PLAY, LEVELPREP, TITLE, HOWTO, CONTROLS, OPTIONS, MENU, LEVELWIN, GAMEWIN, LEVELLOSE, GAMEOVER, CREDITS, LOADING, INTRO, GUN, SWORD, REMINDER, LASTLEVEL, ENDSTORY};
 
 class Game2App : public D3DApp
 {
@@ -122,7 +122,10 @@ private:
 	vector<Box*> obstacleBoxes;
 	vector<Obstacle> obstacles;
 
-
+	//	Menu Stuff
+	int selection;
+	int maxSelection;
+	vector<string> menuItems;
 
 
 	float floorMovement;

@@ -63,6 +63,15 @@ void Game2App::initApp()
 	playState.livesRemaining = 3;
 	//audio->playCue(MAIN_TRACK);
 
+	//	Menu Initialization
+	selection = 0;
+	menuItems.push_back("Play");
+	menuItems.push_back("Controls");
+	menuItems.push_back("Objective");
+	menuItems.push_back("Options");
+	menuItems.push_back("Exit");
+	maxSelection = menuItems.size() - 1;
+
 	srand(time(0));
 	left = Vector3(1,0,0);
 	right = Vector3(-1,0,0);
@@ -350,55 +359,57 @@ void Game2App::updateScene(float dt)
 
 		
 		if (gameTime > 7.0f || input->wasKeyPressed(AdvanceScreenKey))
-			gameState = HOWTO;
+			gameState = MENU;
 		playState.level = 1;
+	}
+	else if (gameState == MENU)
+	{
+		showSplash();
+		//	Input
+		if (input->wasKeyPressed(VK_DOWN))
+		{
+			selection++;
+		}
+		if (input->wasKeyPressed(VK_UP))
+		{
+			selection--;
+		}
+		if (selection < 0)
+			selection = maxSelection;
+		if (selection > maxSelection)
+			selection = 0;
+
+		if (input->wasKeyPressed(VK_RETURN))
+		{
+			switch(selection)
+			{
+			case 0:	//	Play
+				playState.level = 1;
+				gameState = LEVELPREP;
+				break;
+			case 1:	//	Controls
+				gameState = CONTROLS;
+				break;
+			case 2:	//	Objective
+				gameState =	HOWTO;
+				break;
+			case 3:	//	Options
+				gameState = OPTIONS;
+				break;
+			case 4:	//	Exit
+				exit(0);
+				break;
+			}
+		}
 	}
 	else if (gameState == HOWTO) 
 	{
 		//change texture on splash to "how to" 	bool toLoading = false;
 		showSplash();
-		timer += dt;
 		bool toLoading = false;
-		if (timer > 15.0f || input->wasKeyPressed(AdvanceScreenKey))
+		if (input->anyKeyPressed())
 		{
-			switch(playState.level)
-			{
-			case 1:
-				if (level1 == 0)
-					toLoading = true;
-				break;
-			case 2:
-				if (level2 == 0)
-					toLoading = true;
-				break;
-			case 3:
-				if (level3 == 0)
-					toLoading = true;
-				break;
-			case 4:
-				if (level4 == 0)
-					toLoading = true;
-				break;
-			case 5:
-				if (level5 == 0)
-					toLoading = true;
-				break;
-			case 6:
-				if (level6 == 0)
-					toLoading = true;
-				break;
-			}
-			if (toLoading)
-			{
-				gameState = LOADING;
-				splashScreenIsUp = true;
-			}
-			else {
-				//gameState = PLAY;
-				gameState = INTRO;
-				timer = 0.0f;
-			}
-			//timer = 0.0f;
+			gameState = MENU;
 		}
 	} 
 	else if (gameState == INTRO) {
@@ -453,7 +464,6 @@ void Game2App::updateScene(float dt)
 	{
 		showSplash();
 		playState.level += 1;
-		playState.livesRemaining = 3;
 		playState.health = 100;
 		playState.newLevel = true;
 		if (playState.level > 6) 
@@ -462,53 +472,9 @@ void Game2App::updateScene(float dt)
 		} 
 		else 
 		{
-			bool toLoading = false;
-			switch(playState.level)
-			{
-			case 1:
-				if (level1 == 0)
-					toLoading = true;
-				break;
-			case 2:
-				if (level2 == 0)
-					toLoading = true;
-				break;
-			case 3:
-				if (level3 == 0)
-					toLoading = true;
-				break;
-			case 4:
-				if (level4 == 0)
-					toLoading = true;
-				break;
-			case 5:
-				if (level5 == 0)
-					toLoading = true;
-				break;
-			case 6:
-				if (level6 == 0)
-					toLoading = true;
-				break;
-			}
-			if (toLoading)
-			{
-				gameState = LOADING;
-				splashScreenIsUp = true;
-			}
-			else {
-				if (playState.level == 3) {
-					timer = 0.0f;
-					gameState = SWORD;
-				} else if (playState.level == 5) {
-					timer = 0.0f;
-					gameState = GUN;
-				} else if (playState.level == 6) {
-					timer = 0.0f;
-					gameState = LASTLEVEL;
-				} else {
-					gameState = PLAY;
-				}
-			}
+			gameState = LEVELPREP;
+			timer = 0.0f;
+			input->clearAll();
 		}
 	}
 	else if (gameState == GAMEWIN) 
@@ -651,6 +617,62 @@ void Game2App::updateScene(float dt)
 		} else {
 			gameState = PLAY;
 			timer = 0.0f;
+		}
+		input->clearAll();
+	}
+	else if (gameState == LEVELPREP)
+	{
+		bool toLoading = false;
+		
+		switch(playState.level)
+		{
+		case 1:
+			if (level1 == 0)
+				toLoading = true;
+			break;
+		case 2:
+			if (level2 == 0)
+				toLoading = true;
+			break;
+		case 3:
+			if (level3 == 0)
+				toLoading = true;
+			break;
+		case 4:
+			if (level4 == 0)
+				toLoading = true;
+			break;
+		case 5:
+			if (level5 == 0)
+				toLoading = true;
+			break;
+		case 6:
+			if (level6 == 0)
+				toLoading = true;
+			break;
+		}
+		if (toLoading)
+		{
+			gameState = LOADING;
+			splashScreenIsUp = true;
+		}
+		else {
+			if (playState.level == 1) {
+				timer = 0.0f;
+				gameState = INTRO;
+			} else if (playState.level == 3) {
+				timer = 0.0f;
+				gameState = SWORD;
+			} else if (playState.level == 5) {
+				timer = 0.0f;
+				gameState = GUN;
+			} else if (playState.level == 6) {
+				timer = 0.0f;
+				gameState = LASTLEVEL;
+			} else {
+				gameState = PLAY;
+				timer = 0.0f;
+			}
 		}
 	}
 	else if (gameState == PLAY) 
@@ -1071,7 +1093,7 @@ void Game2App::drawScene()
 
 	}
 	//Draw splash screen
-	if (gameState == TITLE)
+	if (gameState == TITLE || gameState == MENU)
 	{
 		mfxDiffuseMapVar->SetResource(titleSplash.GetTexture());
 	}
@@ -1180,6 +1202,27 @@ void Game2App::drawScene()
 	RECT Stamina = {460, 8, 0, 0};
 	RECT R1 = {0, 0, 800, 600};
 	RECT R2 = {0, 540, 800, 600};
+	long midPoint = (MouseRect.right - MouseRect.left) / 2;
+	long half = midPoint / 2;
+	long firstMenuY = (MouseRect.bottom - MouseRect.top) / 3;
+	vector<RECT> menuRects;
+	menuRects.resize(menuItems.size());
+	for (int i=0; i<menuRects.size(); ++i)
+	{
+		SetRect(&menuRects[i], midPoint - half, firstMenuY, midPoint + half, firstMenuY + 70);
+		firstMenuY += 77;
+	}
+	if (gameState == MENU)
+	{
+		for (int i=0; i<menuRects.size(); ++i)
+		{
+			std::wstring item;
+			std::wostringstream menuOut;
+			menuOut << menuItems[i].c_str();
+			item = menuOut.str();
+			mFont->DrawText(0, item.c_str(), -1, &menuRects[i], DT_CENTER | DT_VCENTER, (selection == i ? White : Black));
+		}
+	}
 
 	std::wostringstream outs;  
 	
