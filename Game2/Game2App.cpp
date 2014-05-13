@@ -771,7 +771,7 @@ void Game2App::updateScene(float dt)
 		}
 		if (!spotted)
 		{
-			playState.health += dt * 20.0f;
+			playState.health += dt * 25.0f;
 			if (playState.health > 100)
 				playState.health = 100;
 		}
@@ -926,9 +926,12 @@ void Game2App::updateScene(float dt)
 		Normalize(&targetUp, &targetUp);
 		float angle = 0.78f;
 		float hudOffset = 3.7f;
-		teleHudPos = camPos + targetDir * 10.0f + targetRight * hudOffset + targetUp * hudOffset;
+		float hudOffsetX, hudOffsetY;
+		hudOffsetY = 3.67f;
+		hudOffsetX = 1.27f;
+		teleHudPos = camPos + targetDir * 10.0f + targetRight * hudOffsetX + targetUp * hudOffsetY;
 		teleCharge.setPosition(teleHudPos);
-		teleHudPos = camPos + targetDir * 9.99f + targetRight * hudOffset + targetUp * hudOffset;
+		teleHudPos = camPos + targetDir * 9.99f + targetRight * hudOffsetX + targetUp * hudOffsetY;
 		teleChargeBorder.setPosition(teleHudPos);
 		teleCharge.setRotXAngle(angle);
 		teleChargeBorder.setRotXAngle(angle);
@@ -944,10 +947,11 @@ void Game2App::updateScene(float dt)
 		Cross(&targetUp, &targetDir, &targetRight);
 		Normalize(&targetUp, &targetUp);
 		angle = 0.78f;
-		hudOffset = 3.2f;
-		healthHudPos = camPos + targetDir * 10.0f + targetRight * hudOffset + targetUp * hudOffset;
+		hudOffset = 3.67f;
+		hudOffsetX = hudOffsetY = hudOffset;
+		healthHudPos = camPos + targetDir * 10.0f + targetRight * hudOffsetX + targetUp * hudOffsetY;
 		healthLevel.setPosition(healthHudPos);
-		healthHudPos = camPos + targetDir * 9.99f + targetRight * hudOffset + targetUp * hudOffset;
+		healthHudPos = camPos + targetDir * 9.99f + targetRight * hudOffsetX + targetUp * hudOffsetY;
 		healthBorder.setPosition(healthHudPos);
 		healthLevel.setRotXAngle(angle);
 		healthBorder.setRotXAngle(angle);
@@ -1117,28 +1121,31 @@ void Game2App::drawScene()
 		
 		D3D10_TECHNIQUE_DESC techDescHud;
 		mTechHud->GetDesc(&techDescHud);
-		//	Charge bar
-		mfxDiffuseMapVarHud->SetResource(teleChargeTex.GetTexture());
-		teleCharge.setScaleX((player.teleportChargeCounter / player.teleportChargeTime) * 2.0f);
-		if (player.weapon && player.weapon->getName() == "Sword")
-			teleCharge.setScaleX((player.stamina / player.maxStamina) * 2.0f);
-		mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
-		for(UINT p = 0; p < techDescHud.Passes; ++p)
+		if (player.weapon)
 		{
-			mfxWVPVarHud->SetMatrix(teleCharge.getWorld() * mVP);
-			mfxWorldVarHud->SetMatrix(teleCharge.getWorld());
-			mTechHud->GetPassByIndex( p )->Apply(0);
-			teleCharge.draw();
-		}
-		//	Charge Bar Border
-		mfxDiffuseMapVarHud->SetResource(teleChargeBorderTex.GetTexture());
-		mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
-		for(UINT p = 0; p < techDescHud.Passes; ++p)
-		{
-			mfxWVPVarHud->SetMatrix(teleChargeBorder.getWorld() * mVP);
-			mfxWorldVarHud->SetMatrix(teleChargeBorder.getWorld());
-			mTechHud->GetPassByIndex( p )->Apply(0);
-			teleChargeBorder.draw();
+			//	Charge bar
+			mfxDiffuseMapVarHud->SetResource(teleChargeTex.GetTexture());
+			teleCharge.setScaleX((player.teleportChargeCounter / player.teleportChargeTime) * 2.0f);
+			if (player.weapon->getName() == "Sword")
+				teleCharge.setScaleX((player.stamina / player.maxStamina) * 2.0f);
+			mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
+			for(UINT p = 0; p < techDescHud.Passes; ++p)
+			{
+				mfxWVPVarHud->SetMatrix(teleCharge.getWorld() * mVP);
+				mfxWorldVarHud->SetMatrix(teleCharge.getWorld());
+				mTechHud->GetPassByIndex( p )->Apply(0);
+				teleCharge.draw();
+			}
+			//	Charge Bar Border
+			mfxDiffuseMapVarHud->SetResource(teleChargeBorderTex.GetTexture());
+			mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
+			for(UINT p = 0; p < techDescHud.Passes; ++p)
+			{
+				mfxWVPVarHud->SetMatrix(teleChargeBorder.getWorld() * mVP);
+				mfxWorldVarHud->SetMatrix(teleChargeBorder.getWorld());
+				mTechHud->GetPassByIndex( p )->Apply(0);
+				teleChargeBorder.draw();
+			}
 		}
 
 		// Health Level
