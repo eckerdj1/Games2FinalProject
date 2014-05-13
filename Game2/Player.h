@@ -55,8 +55,13 @@ public:
 	bool teleporting;
 	float teleportFloat;
 	float factor;
+	float teleportCooldownTime;
 	float teleportCooldownCounter;
-	float teleportCooldown;
+	bool onCooldown;
+	float teleportChargeCounter;
+	float teleportChargeTime;
+	float teleportRangeMax;
+	bool teleportCharged;
 
 	Weapon* weapon;
 

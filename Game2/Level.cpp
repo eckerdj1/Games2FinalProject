@@ -123,6 +123,7 @@ void Level::fillLevel(string s) {
 		// walls
 		float x1, x2, z1, z2, b;
 		fin >> x1 >> z1 >> x2 >> z2 >> b;
+		isThick = b;
 		float xLength = x2 - x1;
 		if (xLength < 0) {
 			xLength *= -1;

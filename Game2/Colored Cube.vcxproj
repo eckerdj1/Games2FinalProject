@@ -156,14 +156,17 @@
     <None Include="Game Over Screen.png" />
     <None Include="Game Win.png" />
     <None Include="How to Play.png" />
+    <None Include="hudLighting.fx" />
     <None Include="level1.txt" />
     <None Include="level2.txt" />
+    <None Include="Level2Teleport.txt" />
     <None Include="level3.txt" />
     <None Include="levelBackstab1.txt" />
     <None Include="levelTeleport1.txt" />
     <None Include="lighthelper.fx" />
     <None Include="lighting.fx" />
     <None Include="LoadScreen.png" />
+    <None Include="Particles.fx" />
     <None Include="Stealth Tactics Title Screen.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

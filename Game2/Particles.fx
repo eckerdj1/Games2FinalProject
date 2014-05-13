@@ -78,11 +78,6 @@ void GS(point VS_OUT gIn[1],
 	//
 	// Compute texture coordinates to stretch texture over quad.
 	//
-	float2 texC[4];
-	texC[0] = float2(0.0f, 1.0f);
-	texC[1] = float2(1.0f, 1.0f);
-	texC[2] = float2(0.0f, 0.0f);
-	texC[3] = float2(1.0f, 0.0f);
 	//
 	// Compute world matrix so that billboard is aligned with
 	// the y-axis and faces the camera.

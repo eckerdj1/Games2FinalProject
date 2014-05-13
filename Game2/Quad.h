@@ -22,6 +22,7 @@ public:
 	void setRotYAngle(float angle) {rotY = angle;}
 	void setRotZAngle(float angle) {rotZ = angle;}
 	void setPosition(Vector3 pos) {position = pos;}
+	void setScaleX(float x);
 	Vector3 getPosition() {return position;}
 	
 	void setTexCoords(float top, float left, float bottom, float right);
@@ -35,8 +36,13 @@ private:
 	ID3D10Buffer* mVB;
 	ID3D10Buffer* mIB;
 
+	Color spec;
+	Color color;
+
 	Matrix world;
 	Vector3 position;
+
+	float scaleX, scaleY;
 	
 	Vector2 tl;
 	Vector2 tr;

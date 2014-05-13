@@ -28,9 +28,9 @@ public:
 	void setDiffuseMap(ID3D10EffectShaderResourceVariable* var);
 	void rescale(float sx, float sy, float sz);
 
-	void setVertexColor(DXColor c1,DXColor c2);
-	DXColor getColor1();
-	DXColor getColor2();
+	void setVertexColor(Color c1,Color c2);
+	Color getColor1();
+	Color getColor2();
 
 	void setTexCoords(float top, float left, float bottom, float right);
 
@@ -42,7 +42,7 @@ private:
 	bool textured;
 
 	float scaleX, scaleY, scaleZ;
-	DXColor color1, color2;
+	Color color1, color2;
 
 	Quad frontTex, backTex, leftSideTex, rightSideTex, topTex, bottomTex;
 

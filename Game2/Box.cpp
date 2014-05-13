@@ -32,7 +32,7 @@ void Box::init(ID3D10Device* device, float scale, D3DXCOLOR c)
 	float specPower, specM;
 	specM = 0.7f;
 	specPower = 64.0f;
-	DXColor spec = DXColor(c.r * specM, c.g * specM, c.b * specM, specPower);
+	Color spec = Color(c.r * specM, c.g * specM, c.b * specM, specPower);
 	Vector3 up, down, left, right, front, back;
 	up = Vector3(0,1,0);
 	down = Vector3(0,-1,0);
@@ -237,8 +237,8 @@ void Box::init(ID3D10Device* device, float sX, float sY, float sZ, D3DXCOLOR c1,
 	float specPower, specM;
 	specM = 0.7f;
 	specPower = 64.0f;
-	DXColor spec1 = DXColor(c1.r * specM, c1.g * specM, c1.b * specM, specPower);
-	DXColor spec2 = DXColor(c2.r * specM, c2.g * specM, c2.b * specM, specPower);
+	Color spec1 = Color(c1.r * specM, c1.g * specM, c1.b * specM, specPower);
+	Color spec2 = Color(c2.r * specM, c2.g * specM, c2.b * specM, specPower);
 	Vector3 up, down, left, right, front, back;
 	up = Vector3(0,1,0);
 	down = Vector3(0,-1,0);
@@ -360,15 +360,15 @@ void Box::draw()
 }
 
 
-void Box::setVertexColor(DXColor c1,DXColor c2) {
+void Box::setVertexColor(Color c1,Color c2) {
 	mVB->Release();
 	color1 = c1;
 	color2 = c2;
 	float specPower, specM;
 	specM = 0.9f;
 	specPower = 64.0f;
-	DXColor spec1 = DXColor(c1.r * specM, c1.g * specM, c1.b * specM, specPower);
-	DXColor spec2 = DXColor(c2.r * specM, c2.g * specM, c2.b * specM, specPower);
+	Color spec1 = Color(c1.r * specM, c1.g * specM, c1.b * specM, specPower);
+	Color spec2 = Color(c2.r * specM, c2.g * specM, c2.b * specM, specPower);
 	Vector3 up, down, left, right, front, back;
 	up = Vector3(0,1,0);
 	down = Vector3(0,-1,0);
@@ -427,10 +427,10 @@ void Box::setVertexColor(DXColor c1,DXColor c2) {
     HR(md3dDevice->CreateBuffer(&vbd, &vinitData, &mVB));
 }
 
-DXColor Box::getColor1() {
+Color Box::getColor1() {
 	return color1;
 }
-DXColor Box::getColor2() {
+Color Box::getColor2() {
 	return color2;
 }
 
@@ -458,7 +458,7 @@ void Box::rescale(float sx, float sy, float sz)
 	float specPower, specM;
 	specM = 0.9f;
 	specPower = 64.0f;
-	DXColor spec1 = DXColor(color1.r * specM, color1.g * specM, color1.b * specM, specPower);
+	Color spec1 = Color(color1.r * specM, color1.g * specM, color1.b * specM, specPower);
 	Vector3 up, down, left, right, front, back;
 	up = Vector3(0,1,0);
 	down = Vector3(0,-1,0);

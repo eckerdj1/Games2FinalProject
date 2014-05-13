@@ -239,5 +239,10 @@
     <None Include="levelTeleport1.txt">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Particles.fx" />
+    <None Include="hudLighting.fx" />
+    <None Include="Level2Teleport.txt">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

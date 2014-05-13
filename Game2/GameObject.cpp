@@ -128,9 +128,9 @@ bool GameObject::contains(Vector3 point)
 	return false;
 }
 
-DXColor GameObject::colorAtPoint(float zPos)
+Color GameObject::colorAtPoint(float zPos)
 {
-	DXColor c1, c2, c3;
+	Color c1, c2, c3;
 	c1 = box->getColor1();
 	c2 = box->getColor2();
 	if (c1 == c2)

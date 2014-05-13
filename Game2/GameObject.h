@@ -58,7 +58,7 @@ public:
 
 	bool contains(Vector3);
 
-	DXColor colorAtPoint(float zPos);
+	Color colorAtPoint(float zPos);
 
 	float xRadius();
 	float yRadius();

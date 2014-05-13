@@ -34,7 +34,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
 Game2App::Game2App(HINSTANCE hInstance)
 : D3DApp(hInstance), mFX(0), mTech(0), mVertexLayout(0),
-  mfxWVPVar(0), mTheta(0.0f), mPhi(PI*0.25f)
+  mfxWVPVar(0), mFXHud(0), mTechHud(0), mVertexLayoutHud(0),
+  mfxWVPVarHud(0), mTheta(0.0f), mPhi(PI*0.25f)
 {
 	D3DXMatrixIdentity(&mView);
 	D3DXMatrixIdentity(&mProj);
@@ -48,6 +49,8 @@ Game2App::~Game2App()
 
 	ReleaseCOM(mFX);
 	ReleaseCOM(mVertexLayout);
+	ReleaseCOM(mFXHud);
+	ReleaseCOM(mVertexLayoutHud);
 }
 
 void Game2App::initApp()
@@ -75,6 +78,7 @@ void Game2App::initApp()
 	mousePos = Vector2(0.0f, 0.0f);
 	lastMousePos = mousePos;
 	
+	//	Splash Screen init
 	float sWidth, sHeight;
 	sWidth = 177.0f;
 	sHeight = 132.5f;
@@ -84,6 +88,13 @@ void Game2App::initApp()
 	splashPos = Vector3(0.0f, 200.0f - (sHeight / 2.0f), 110.0f);
 	splashCamPos = Vector3(0.0f, 200.0f, -50.0f);
 	splashTarget = Vector3(0.0f, 200.0f, 200.0f);
+
+	//	HUD 
+	teleChargeBorder.init(md3dDevice, 2.0f, 0.4f, White);
+	teleCharge.init(md3dDevice, 2.0f, 0.4f, White);
+	teleHudPos = Vector3(0,0,0);
+	teleChargeBorderTex.Initialize(md3dDevice, L"TeleChargeBorder.png");
+	teleChargeTex.Initialize(md3dDevice, L"TeleCharge.png");
 
 	//initialize texture resources
 	diffuseMap.Initialize(md3dDevice, L"goon.jpg");
@@ -134,9 +145,9 @@ void Game2App::initApp()
 						90,
 						(i % cols) * spacing + startColPos);
 		//l.pos = Vector3(0,100,0);
-		l.ambient = Color(1.0f, 1.0f, 1.0f);
-		l.diffuse = Color(1.0f, 1.0f, 1.0f);
-		l.specular = Color(1.0f, 1.0f, 1.0f);
+		l.ambient = Color3(1.0f, 1.0f, 1.0f);
+		l.diffuse = Color3(1.0f, 1.0f, 1.0f);
+		l.specular = Color3(1.0f, 1.0f, 1.0f);
 		l.att.x = 0.0f;
 		l.att.y = 0.017f;
 		l.att.z = 0.00085f;
@@ -145,13 +156,13 @@ void Game2App::initApp()
 		lights.push_back(l);
 	}
 	ambientLight.pos = Vector3(0,0,0);
-	ambientLight.ambient = Color(0.17f, 0.17f, 0.17f);
+	ambientLight.ambient = Color3(0.17f, 0.17f, 0.17f);
 
 	splashLight.pos = Vector3(0,150,-100);
 	splashLight.dir = Vector3(0, 0, 1);
-	splashLight.ambient = Color(0.0f, 0.0f, 0.0f);
-	splashLight.diffuse = Color(1.0f, 1.0f, 1.0f, 1.0f);
-	splashLight.specular = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	splashLight.ambient = Color3(0.0f, 0.0f, 0.0f);
+	splashLight.diffuse = Color3(1.0f, 1.0f, 1.0f, 1.0f);
+	splashLight.specular = Color3(1.0f, 1.0f, 1.0f, 1.0f);
 	splashLight.att.x = 1.0f;
 	splashLight.att.y = 0.0f;
 	splashLight.att.z = 0.0f;
@@ -217,6 +228,7 @@ void Game2App::initApp()
 	floor.init(md3dDevice, 1000, 1000);
 	//playState.pickUpsRemaining = level->pickups.size();
 	buildFX();
+	buildHudFX();
 	buildVertexLayouts();
 
 	//numberOfSpotLights = level->spotLights.size();
@@ -681,12 +693,42 @@ void Game2App::updateScene(float dt)
 				}
 			}
 		}
+
 		player.update(dt);
 		floor.update(dt);
 		level->update(dt);
+
 		if (playState.livesRemaining == 0)
 		{
 			gameState = GAMEOVER;
+		}
+
+		CameraDirection.x = sinf(camTheta);
+		CameraDirection.z = cosf(camTheta);
+
+		
+
+		// Build the view matrix.
+		if (cameraMode == topDown)
+		{
+			player.canStrafe = false;
+			camPos = Vector3(0.0f, 150.0f / camZoom, 0.0f);
+			camPos += player.getPosition();
+			camPos -= CameraDirection * 150 / camZoom;
+			target = player.getPosition();
+			//camPos = Vector3(0.0f, 100.0f, 0.0f);
+		}
+		else if (cameraMode == firstPerson)
+		{
+			player.canStrafe = true;
+			camPos = Vector3(0.0f, player.getHeight(), 0.0f);
+			camPos += player.getPosition();
+			target = player.getPosition() + Vector3(0.0f, player.getHeight(), 0.0f);
+			target += player.getDirection() * 20;
+		}
+		if (keyPressed(PlayerJumpKey))
+		{
+			//target = Vector3(0.0f, 150.0f, 100.0f);
 		}
 
 		if (keyPressed(CameraLeftKey))
@@ -745,32 +787,27 @@ void Game2App::updateScene(float dt)
 				camZoom = maxZoom;
 		}*/
 	
-		CameraDirection.x = sinf(camTheta);
-		CameraDirection.z = cosf(camTheta);
-
-		// Build the view matrix.
-		if (cameraMode == topDown)
-		{
-			player.canStrafe = false;
-			camPos = Vector3(0.0f, 150.0f / camZoom, 0.0f);
-			camPos += player.getPosition();
-			camPos -= CameraDirection * 150 / camZoom;
-			target = player.getPosition();
-			//camPos = Vector3(0.0f, 100.0f, 0.0f);
-		}
-		else if (cameraMode == firstPerson)
-		{
-			player.canStrafe = true;
-			camPos = Vector3(0.0f, player.getHeight(), 0.0f);
-			camPos += player.getPosition();
-			target = player.getPosition() + Vector3(0.0f, player.getHeight(), 0.0f);
-			target += player.getDirection() * 20;
-		}
-		if (keyPressed(PlayerJumpKey))
-		{
-			target = Vector3(0.0f, 150.0f, 100.0f);
-		}
-
+		
+		//	Position the HUD
+		targetDir = target - camPos;
+		Normalize(&targetDir, &targetDir);
+		teleCharge.setRotYAngle(camTheta);
+		teleChargeBorder.setRotYAngle(camTheta);
+		Cross(&targetRight, &Vector3(0,1,0), &targetDir);
+		Normalize(&targetRight, &targetRight);
+		Cross(&targetUp, &targetDir, &targetRight);
+		Normalize(&targetUp, &targetUp);
+		float angle = 0.78f;
+		float hudOffset = 3.7f;
+		teleHudPos = camPos + targetDir * 10.0f + targetRight * hudOffset + targetUp * hudOffset;
+		teleCharge.setPosition(teleHudPos);
+		teleHudPos = camPos + targetDir * 9.99f + targetRight * hudOffset + targetUp * hudOffset;
+		teleChargeBorder.setPosition(teleHudPos);
+		teleCharge.setRotXAngle(angle);
+		teleChargeBorder.setRotXAngle(angle);
+		teleCharge.update(dt);
+		teleChargeBorder.update(dt);
+		
 	}
 
 	if (gameState == LOADING)
@@ -914,6 +951,33 @@ void Game2App::drawScene()
 			splash.draw();
 		}
 	}
+	else
+	{
+		
+		D3D10_TECHNIQUE_DESC techDescHud;
+		mTechHud->GetDesc(&techDescHud);
+		//	Charge bar
+		mfxDiffuseMapVarHud->SetResource(teleChargeTex.GetTexture());
+		teleCharge.setScaleX((player.teleportChargeCounter / player.teleportChargeTime) * 2.0f);
+		mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
+		for(UINT p = 0; p < techDescHud.Passes; ++p)
+		{
+			mfxWVPVarHud->SetMatrix(teleCharge.getWorld() * mVP);
+			mfxWorldVarHud->SetMatrix(teleCharge.getWorld());
+			mTechHud->GetPassByIndex( p )->Apply(0);
+			teleCharge.draw();
+		}
+		//	Charge Bar Border
+		mfxDiffuseMapVarHud->SetResource(teleChargeBorderTex.GetTexture());
+		mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
+		for(UINT p = 0; p < techDescHud.Passes; ++p)
+		{
+			mfxWVPVarHud->SetMatrix(teleChargeBorder.getWorld() * mVP);
+			mfxWorldVarHud->SetMatrix(teleChargeBorder.getWorld());
+			mTechHud->GetPassByIndex( p )->Apply(0);
+			teleChargeBorder.draw();
+		}
+	}
 	
 
 
@@ -927,9 +991,12 @@ void Game2App::drawScene()
 	
 	outs.precision(6);
 	outs << "Lives Remaining: " << playState.livesRemaining;
-	outs << "\t\tMousePos X: "  << D3DApp::MousePos.x << "  Y: " << D3DApp::MousePos.y << "\n";
+	outs << "   MousePos X: "  << D3DApp::MousePos.x << "  Y: " << D3DApp::MousePos.y << "\n";
 	outs << "Pick ups Left: " << playState.pickUpsRemaining;
-	outs << "\t\tTeleport Float: " << player.teleportFloat << "\n";
+	outs << "  Teleport Charge Counter: " << player.teleportChargeCounter << "\n";
+	outs << "TargetRight: " << targetRight.x << "   " << targetRight.y << "   " << targetRight.z << "\n";
+	outs << "TargetUp: " << targetUp.x << "   " << targetUp.y << "   " << targetUp.z << "\n";
+	outs << "QuadRotX: " << teleCharge.rotX << "\n";
 	//outs << "Game Time: " << mTimer.getGameTime() << "\n";
 	//outs << "CameraPos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << "\n";
 	//outs << "Target: " << target.x << ", " << target.y << ", " << target.z << "\n";
@@ -1027,6 +1094,39 @@ void Game2App::buildFX()
 
 }
 
+void Game2App::buildHudFX()
+{
+	DWORD shaderFlags = D3D10_SHADER_ENABLE_STRICTNESS;
+#if defined( DEBUG ) || defined( _DEBUG )
+    shaderFlags |= D3D10_SHADER_DEBUG;
+//	shaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
+#endif
+ 
+	ID3D10Blob* compilationErrors = 0;
+	HRESULT hr = 0;
+	hr = D3DX10CreateEffectFromFile(L"hudLighting.fx", 0, 0, 
+		"fx_4_0", shaderFlags, 0, md3dDevice, 0, 0, &mFXHud, &compilationErrors, 0);
+	if(FAILED(hr))
+	{
+		if( compilationErrors )
+		{
+			MessageBoxA(0, (char*)compilationErrors->GetBufferPointer(), 0, 0);
+			ReleaseCOM(compilationErrors);
+		}
+		DXTrace(__FILE__, (DWORD)__LINE__, hr, L"D3DX10CreateEffectFromFile", true);
+	} 
+
+	mTechHud = mFXHud->GetTechniqueByName("HudLightTech");
+	
+	mfxWVPVarHud = mFXHud->GetVariableByName("gWVP")->AsMatrix();
+	mfxWorldVarHud  = mFXHud->GetVariableByName("gWorld")->AsMatrix();
+
+
+	mfxDiffuseMapVarHud = mFXHud->GetVariableByName("gDiffuseMap")->AsShaderResource();
+	mfxTexMtxVarHud     = mFXHud->GetVariableByName("gTexMtx")->AsMatrix();
+
+}
+
 void Game2App::buildVertexLayouts()
 {
 	// Create the vertex input layout.
@@ -1043,7 +1143,12 @@ void Game2App::buildVertexLayouts()
     D3D10_PASS_DESC PassDesc;
     mTech->GetPassByIndex(0)->GetDesc(&PassDesc);
     HR(md3dDevice->CreateInputLayout(vertexDesc, 5, PassDesc.pIAInputSignature,
-		PassDesc.IAInputSignatureSize, &mVertexLayout));
+		PassDesc.IAInputSignatureSize, &mVertexLayout));	
+	// Create the input layout for Hud
+    D3D10_PASS_DESC PassDescHud;
+    mTechHud->GetPassByIndex(0)->GetDesc(&PassDescHud);
+    HR(md3dDevice->CreateInputLayout(vertexDesc, 5, PassDescHud.pIAInputSignature,
+		PassDescHud.IAInputSignatureSize, &mVertexLayoutHud));
 }
 
 

@@ -22,12 +22,17 @@ Player::Player()
 	up = Vector3(0,1,0);
 	down = Vector3(0,-1,0);
 	zero = Vector3(0,0,0);
-	teleportCooldown = 2.0f;
-	teleportCooldownCounter = 0.0f;
+	teleportChargeTime = 1.7f;
+	teleportChargeCounter = 0.0f;
 	teleporting = false;
 	weapon = 0;
-	teleportFloat = 2.5f;
+	teleportFloat = 40.7f;
 	factor = -0.02f;
+	teleportRangeMax = 1000.0f;
+	teleportCharged = false;
+	onCooldown = false;
+	teleportCooldownTime = 1.0f;
+	teleportCooldownCounter = 1.0f;
 }
 
 Player::~Player()
@@ -233,26 +238,49 @@ void Player::update(float dt)
 	if (weapon && weapon->getName() == "TeleportGun")
 	{
 		float distSquared = (xDist * xDist + yDist * yDist);
+		Vector3 jumpDir = direction * teleportFloat * teleportChargeCounter;// sqrt(distSquared) / teleportFloat;
 
-		teleportLight->pos = position + direction * sqrt(distSquared) / teleportFloat;
+		teleportLight->pos = position + jumpDir;
 		teleportLight->pos.y = 25.0f;
 
-		if (input->getMouseLButton() && !teleporting && keyPressed(VK_MENU))
+		if (input->getMouseLButton() && !onCooldown)
 		{
-			position += direction * sqrt(distSquared) / teleportFloat;
+			position += jumpDir;
 			for (int i=0; i<perimeter.size(); ++i)
 			{
-				perimeter[i] += direction * sqrt(distSquared) / teleportFloat;
+				perimeter[i] += jumpDir;
 			}
-			teleporting = true;
+			//teleportCharged = false;
+			teleportChargeCounter = 0.5f;
+			onCooldown = true;
+			teleportCooldownCounter = 0.0f;
 		}
-		if (teleporting)
+		if (keyPressed(VK_MENU))
+		{
+			teleportChargeCounter += dt;
+		}
+		else
+		{
+			teleportChargeCounter -= dt * 0.25f;
+		}
+		if (teleportChargeCounter > teleportChargeTime)
+		{
+			teleportCharged = true;
+			teleportChargeCounter = teleportChargeTime;
+		}
+		else
+		{	
+			if (teleportChargeCounter < 0.5f)
+				teleportChargeCounter = 0.5f;
+			
+			teleportCharged = false;
+		}
+		if (onCooldown)
 		{
 			teleportCooldownCounter += dt;
-			if (teleportCooldownCounter > teleportCooldown)
+			if (teleportCooldownCounter > teleportCooldownTime)
 			{
-				teleporting = false;
-				teleportCooldownCounter = 0.0f;
+				onCooldown = false;
 			}
 		}
 	}
@@ -362,11 +390,12 @@ void Player::update(float dt)
 	if (teleportLight->diffuse.g < 0.1f || teleportLight->diffuse.g > 1.0f) {
 		factor *= -1;
 	}
-	if (keyPressed(VK_MENU)) {
+	//if (keyPressed(VK_MENU)) {
 		teleportLight->range = 1000.0f;
-	} else {
-		teleportLight->range = 0.0f;
-	}
+		teleportLight->spotPow = 49.0f / (teleportCooldownCounter + 0.01f / teleportCooldownTime);
+	//} else {
+		//teleportLight->range = 0.0f;
+	//}
 	
 
 	//	leg movement

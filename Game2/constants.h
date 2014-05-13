@@ -19,7 +19,7 @@
 #define Normalize D3DXVec3Normalize
 #define Length D3DXVec3Length
 #define keyPressed(x) GetAsyncKeyState(x)
-#define Color(x, y, z) DXColor(x, y, z, 1.0f)
+#define Color3(x, y, z) D3DXCOLOR(x, y, z, 1.0f)
 
 //-----------------------------------------------
 // Useful macros

@@ -99,6 +99,7 @@ public:
 
 private:
 	void buildFX();
+	void buildHudFX();
 	void buildVertexLayouts();
 	void setNewObstacleCluster();
  
@@ -109,7 +110,15 @@ private:
 	Vector3 left, right, forward, back, up, down, zero;
 
 	Quad splash;
+	Quad teleChargeBorder;
+	Quad teleCharge;
+	Vector3 teleHudPos;
 	bool splashScreenIsUp;
+	TextureClass teleChargeBorderTex, teleChargeTex;
+
+	Vector3 targetDir;
+	Vector3 targetRight;
+	Vector3 targetUp;
 
 	Box* playerBox;
 	Box* enemyBox;
@@ -191,6 +200,11 @@ private:
 	ID3D10EffectTechnique* mTech;
 	ID3D10InputLayout* mVertexLayout;
 
+	
+	ID3D10Effect* mFXHud;
+	ID3D10EffectTechnique* mTechHud;
+	ID3D10InputLayout* mVertexLayoutHud;
+
 	TextureClass diffuseMap, specMap;
 
 	TextureClass floorTexMap, floorSpecMap;
@@ -201,6 +215,11 @@ private:
 
 	ID3D10EffectShaderResourceVariable* mfxDiffuseMapVar;
 	ID3D10EffectShaderResourceVariable* mfxSpecMapVar;
+	
+	ID3D10EffectShaderResourceVariable* mfxDiffuseMapVarHud;
+	ID3D10EffectMatrixVariable* mfxWVPVarHud;
+	ID3D10EffectMatrixVariable* mfxWorldVarHud;
+	ID3D10EffectMatrixVariable* mfxTexMtxVarHud;
 
 	ID3D10EffectMatrixVariable* mfxWVPVar;
 	//light variables

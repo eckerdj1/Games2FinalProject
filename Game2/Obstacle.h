@@ -8,7 +8,7 @@ public:
 	~Obstacle(void);
 	
 	void update(float dt);
-	void setColor(DXColor color);
+	void setColor(Color color);
 
 private:
 	int count;

@@ -130,26 +130,27 @@ const float INFINITY = FLT_MAX;
 const float PI       = 3.14159265358979323f;
 const float MATH_EPS = 0.0001f;
 
-#define DXColor D3DXCOLOR
+#define Color D3DXCOLOR
 
-const D3DXCOLOR White(1.0f, 1.0f, 1.0f, 1.0f);
-const D3DXCOLOR Black(0.0f, 0.0f, 0.0f, 1.0f);
-const D3DXCOLOR Gray(0.1f, 0.1f, 0.1f, 1.0f);
-const D3DXCOLOR Red(1.0f, 0.0f, 0.0f, 1.0f);
-const D3DXCOLOR Green(0.0f, 1.0f, 0.0f, 1.0f);
-const D3DXCOLOR Blue(0.0f, 0.0f, 1.0f, 1.0f);
-const D3DXCOLOR LightBlue(0.109f, 0.609f, 0.859f, 1.0f);
-const D3DXCOLOR Yellow(1.0f, 1.0f, 0.0f, 1.0f);
-const D3DXCOLOR Cyan(0.0f, 1.0f, 1.0f, 1.0f);
-const D3DXCOLOR Magenta(1.0f, 0.0f, 1.0f, 1.0f);
-const D3DXCOLOR Crimson(0.8627f, 0.0784f, 0.2352f, 1.0f);
-const D3DXCOLOR DarkRed(0.545f, 0.0f, 0.0f, 1.0f);
-const D3DXCOLOR DarkBlue(0.0f, 0.0f, 0.67f, 1.0f);
+const Color		White(1.0f, 1.0f, 1.0f, 1.0f);
+const Color		Black(0.0f, 0.0f, 0.0f, 1.0f);
+const Color		Gray(0.1f, 0.1f, 0.1f, 1.0f);
+const Color		Red(1.0f, 0.0f, 0.0f, 1.0f);
+const Color		Green(0.0f, 1.0f, 0.0f, 1.0f);
+const Color		Blue(0.0f, 0.0f, 1.0f, 1.0f);
+const Color		LightBlue(0.109f, 0.609f, 0.859f, 1.0f);
+const Color		Yellow(1.0f, 1.0f, 0.0f, 1.0f);
+const Color		Cyan(0.0f, 1.0f, 1.0f, 1.0f);
+const Color		Magenta(1.0f, 0.0f, 1.0f, 1.0f);
+const Color		Crimson(0.8627f, 0.0784f, 0.2352f, 1.0f);
+const Color		DarkRed(0.545f, 0.0f, 0.0f, 1.0f);
+const Color		DarkBlue(0.0f, 0.0f, 0.67f, 1.0f);
+const Color		Purple(0.6132f, 0.1718f, 0.6992f, 1.0f);
 
-const D3DXCOLOR BeachSand(1.0f, 0.96f, 0.62f, 1.0f);
-const D3DXCOLOR LightYellowGreen(0.48f, 0.77f, 0.46f, 1.0f);
-const D3DXCOLOR DarkYellowGreen(0.1f, 0.48f, 0.19f, 1.0f);
-const D3DXCOLOR DarkBrown(0.45f, 0.39f, 0.34f, 1.0f);
+const Color		BeachSand(1.0f, 0.96f, 0.62f, 1.0f);
+const Color		LightYellowGreen(0.48f, 0.77f, 0.46f, 1.0f);
+const Color		DarkYellowGreen(0.1f, 0.48f, 0.19f, 1.0f);
+const Color		DarkBrown(0.45f, 0.39f, 0.34f, 1.0f);
 
 
 #endif // D3DUTIL_H

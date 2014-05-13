@@ -60,7 +60,7 @@ void Text::init(wstring fontName, int size)
 	D3DX10CreateFontIndirect(device, &fontDesc, &font);
 }
 
-void Text::draw(string text, Vector2 position, DXColor color)
+void Text::draw(string text, Vector2 position, Color color)
 {
 	RECT R = {position.x, position.y, 0, 0};
 	LPCWSTR str = toWCString(text);

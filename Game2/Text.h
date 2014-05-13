@@ -23,7 +23,7 @@ public:
 	
 	void init(wstring fontName, int size);
 
-	void draw(string text, Vector2 position, DXColor color = Black);
+	void draw(string text, Vector2 position, Color color = Black);
 
 	static wstring toWString(string str);
 	static const wchar_t* toWCString(string str);
