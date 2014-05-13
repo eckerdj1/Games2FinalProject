@@ -96,6 +96,13 @@ void Game2App::initApp()
 	teleChargeBorderTex.Initialize(md3dDevice, L"TeleChargeBorder.png");
 	teleChargeTex.Initialize(md3dDevice, L"TeleCharge.png");
 
+	healthBorder.init(md3dDevice, 2.0f, 0.4f, White);
+	healthLevel.init(md3dDevice, 2.0, 0.4f, White);
+	healthHudPos = Vector3(0, 0, 0);
+	healthBorderTex.Initialize(md3dDevice, L"TeleChargeBorder.png");
+	healthLevelTex.Initialize(md3dDevice, L"healthCharge.png");
+	
+
 	//initialize texture resources
 	diffuseMap.Initialize(md3dDevice, L"goon.jpg");
 	specMap.Initialize(md3dDevice, L"defaultspec.dds");
@@ -534,7 +541,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == LOADING)
 	{
 		showSplash();
-		playState.level = 6;
+		//playState.level = 6;
 		if (playState.level == 1)
 		{
 			if (!level1)
@@ -916,6 +923,25 @@ void Game2App::updateScene(float dt)
 		teleChargeBorder.setRotXAngle(angle);
 		teleCharge.update(dt);
 		teleChargeBorder.update(dt);
+
+		targetDir = target - camPos;
+		Normalize(&targetDir, &targetDir);
+		healthLevel.setRotYAngle(camTheta);
+		healthBorder.setRotYAngle(camTheta);
+		Cross(&targetRight, &Vector3(0,1,0), &targetDir);
+		Normalize(&targetRight, &targetRight);
+		Cross(&targetUp, &targetDir, &targetRight);
+		Normalize(&targetUp, &targetUp);
+		angle = 0.78f;
+		hudOffset = 3.2f;
+		healthHudPos = camPos + targetDir * 10.0f + targetRight * hudOffset + targetUp * hudOffset;
+		healthLevel.setPosition(healthHudPos);
+		healthHudPos = camPos + targetDir * 9.99f + targetRight * hudOffset + targetUp * hudOffset;
+		healthBorder.setPosition(healthHudPos);
+		healthLevel.setRotXAngle(angle);
+		healthBorder.setRotXAngle(angle);
+		healthLevel.update(dt);
+		healthBorder.update(dt);
 		
 	}
 
@@ -1100,6 +1126,28 @@ void Game2App::drawScene()
 			mfxWorldVarHud->SetMatrix(teleChargeBorder.getWorld());
 			mTechHud->GetPassByIndex( p )->Apply(0);
 			teleChargeBorder.draw();
+		}
+
+		// Health Level
+		mfxDiffuseMapVarHud->SetResource(healthLevelTex.GetTexture());
+		healthLevel.setScaleX(playState.health/50.0f);
+		mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
+		for(UINT p = 0; p < techDescHud.Passes; ++p)
+		{
+			mfxWVPVarHud->SetMatrix(healthLevel.getWorld() * mVP);
+			mfxWorldVarHud->SetMatrix(healthLevel.getWorld());
+			mTechHud->GetPassByIndex( p )->Apply(0);
+			healthLevel.draw();
+		}
+		// Health Bar Border
+		mfxDiffuseMapVarHud->SetResource(healthBorderTex.GetTexture());
+		mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
+		for(UINT p = 0; p < techDescHud.Passes; ++p)
+		{
+			mfxWVPVarHud->SetMatrix(healthBorder.getWorld() * mVP);
+			mfxWorldVarHud->SetMatrix(healthBorder.getWorld());
+			mTechHud->GetPassByIndex( p )->Apply(0);
+			healthBorder.draw();
 		}
 	}
 	

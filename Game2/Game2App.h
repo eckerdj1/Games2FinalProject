@@ -117,9 +117,12 @@ private:
 	Quad splash;
 	Quad teleChargeBorder;
 	Quad teleCharge;
+	Quad healthBorder;
+	Quad healthLevel;
 	Vector3 teleHudPos;
+	Vector3 healthHudPos;
 	bool splashScreenIsUp;
-	TextureClass teleChargeBorderTex, teleChargeTex;
+	TextureClass teleChargeBorderTex, teleChargeTex, healthBorderTex, healthLevelTex;
 
 	Vector3 targetDir;
 	Vector3 targetRight;
