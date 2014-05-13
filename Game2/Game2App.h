@@ -256,6 +256,7 @@ private:
 	D3DXMATRIX worldBox1, worldBox2;
 
 	Weapon* teleportGun;
+	Weapon* sword;
 
 	float mTheta;
 	float mPhi;

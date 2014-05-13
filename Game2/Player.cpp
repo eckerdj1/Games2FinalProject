@@ -523,6 +523,22 @@ void Player::update(float dt)
 			leftForearm->setRotZ(ToRadian(-62));
 			leftForearm->setRotX(ToRadian(-17));
 		}
+		if (weapon->getName() == "Sword") {
+			//move arm to hold sword
+			rightArm->setRotX(ToRadian(180));
+			rightForearm->setRotX(ToRadian(-90));
+			rightForearm->setRotZ(ToRadian(32));
+			
+			float weaponTheta = dirTheta + 0.50f;	
+			Vector3 weaponDir(0,0,0);
+			weaponDir.x = sinf(weaponTheta);
+			weaponDir.z = cosf(weaponTheta);
+			Normalize(&weaponDir, &weaponDir);
+			Vector3 offset(0.0f, 10.0f, 0.0f);
+			weapon->setPosition(position + weaponDir * 4.6 + offset);
+			weapon->setDirection(direction);
+			weapon->update(dt);
+		}
 	}
 
 	//Update the bodyparts

@@ -270,8 +270,19 @@ void Game2App::initApp()
 	teleportGun->addPart("TopBackPanel", "Body", Vector3(0.0f, 1.5f, -1.1f),
 		Vector3(1.1f, 0.1f, 1.0f));
 
-	player.setWeapon(teleportGun);
+	//player.setWeapon(teleportGun);
 	
+	sword = new Weapon();
+	sword->attachBox(blackBox);
+	Vector3 swordSize(.2f, 10.0f, 1.0f);
+	sword->init("Sword", Vector3(0, 10, 0), 15, swordSize.x, swordSize.y, swordSize.z, md3dDevice);
+
+	sword->addPart("Body", "", Vector3(0, 0, 0), swordSize);
+	sword->addPart("CrossBar", "Body", Vector3(0, 2, 0), Vector3(swordSize.x * 2.0f, swordSize.y * .1f, swordSize.z * 4.0f));
+
+	player.setWeapon(sword);
+
+
 	//delete spotLight;
 	//level->setDiffuseMap(mfxDiffuseMapVar);
 	//level->setSpecMap(mfxSpecMapVar);
