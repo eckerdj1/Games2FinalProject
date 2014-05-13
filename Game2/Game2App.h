@@ -274,6 +274,7 @@ private:
 	float spotCounter;
 	float timer;
 	bool audioNotStarted;
+	bool highwayNotStarted;
 
 
 };

@@ -139,6 +139,7 @@ void Game2App::initApp()
 
 	timer = 0.0f;
 	audioNotStarted = true;
+	highwayNotStarted = true;
 
 
 	//init lights - using pointlights
@@ -430,6 +431,10 @@ void Game2App::updateScene(float dt)
 	else if (gameState == LASTLEVEL) {
 		timer += dt;
 		showSplash();
+		if (highwayNotStarted) {
+			audio->playCue(HIGHWAY);
+			highwayNotStarted = false;
+		}
 		if (timer > 10.0f || keyPressed(AdvanceScreenKey)) {
 			gameState = PLAY;
 			timer = 0.0f;

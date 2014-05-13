@@ -93,5 +93,6 @@ const char ALARM[] = "alarm";
 const char PICKUP[] = "pickup";
 const char SWING[] = "swing";
 const char ENEMY_DEAD[] = "enemy dead";
+const char HIGHWAY[] = "highway";
 
 #endif

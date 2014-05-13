@@ -16,8 +16,8 @@ Global Settings
     Header File = C:\Users\PATTERSONSW1\Documents\GitHub\Comp446_Game2\Game2\audio\StealthTactic.h;
     Exclude Category Names = 0;
     Exclude Variable Names = 0;
-    Last Modified Low = 177198151;
-    Last Modified High = 30364444;
+    Last Modified Low = 796721468;
+    Last Modified High = 30371458;
 
     Category
     {
@@ -227,10 +227,10 @@ Wave Bank
     Compression Preset Name = <none>;
     Xbox Bank Last Modified Low = 0;
     Xbox Bank Last Modified High = 0;
-    PC Bank Last Modified Low = 1545437119;
-    PC Bank Last Modified High = 30364445;
-    Bank Last Revised Low = 139534385;
-    Bank Last Revised High = 30364444;
+    PC Bank Last Modified Low = 796971493;
+    PC Bank Last Modified High = 30371458;
+    Bank Last Revised Low = 369238724;
+    Bank Last Revised High = 30371458;
 
     Wave
     {
@@ -250,8 +250,8 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 1514031821;
-            Last Modified High = 30364444;
+            Last Modified Low = 2385249156;
+            Last Modified High = 30367911;
         }
     }
 
@@ -273,8 +273,8 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 1514071825;
-            Last Modified High = 30364444;
+            Last Modified Low = 2385279132;
+            Last Modified High = 30367911;
         }
     }
 
@@ -296,8 +296,8 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 1514901908;
-            Last Modified High = 30364444;
+            Last Modified Low = 2386378252;
+            Last Modified High = 30367911;
         }
     }
 
@@ -319,8 +319,8 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 1514541872;
-            Last Modified High = 30364444;
+            Last Modified Low = 2386348276;
+            Last Modified High = 30367911;
         }
     }
 
@@ -342,8 +342,31 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 1514931911;
-            Last Modified High = 30364444;
+            Last Modified Low = 2386398236;
+            Last Modified High = 30367911;
+        }
+    }
+
+    Wave
+    {
+        Name = highway;
+        File = highway.wav;
+        Build Settings Last Modified Low = 330304831;
+        Build Settings Last Modified High = 30371458;
+
+        Cache
+        {
+            Format Tag = 0;
+            Channels = 2;
+            Sampling Rate = 44100;
+            Bits Per Sample = 1;
+            Play Region Offset = 44;
+            Play Region Length = 6880008;
+            Loop Region Offset = 0;
+            Loop Region Length = 0;
+            File Type = 1;
+            Last Modified Low = 3917881395;
+            Last Modified High = 30371457;
         }
     }
 }
@@ -355,8 +378,8 @@ Sound Bank
     Windows File = Win\Sound Bank.xsb;
     Xbox Bank Path Edited = 0;
     Windows Bank Path Edited = 0;
-    Bank Last Modified Low = 3176642381;
-    Bank Last Modified High = 30364446;
+    Bank Last Modified Low = 797741570;
+    Bank Last Modified High = 30371458;
     Header Last Modified High = 0;
     Header Last Modified Low = 0;
 
@@ -596,6 +619,54 @@ Sound Bank
         }
     }
 
+    Sound
+    {
+        Name = highway;
+        Volume = -1200;
+        Pitch = 0;
+        Priority = 0;
+
+        Category Entry
+        {
+            Name = Default;
+        }
+
+        Track
+        {
+            Volume = 0;
+            Use Filter = 0;
+
+            Play Wave Event
+            {
+                Loop Count = 255;
+                Break Loop = 0;
+                Use Speaker Position = 0;
+                Use Center Speaker = 1;
+                New Speaker Position On Loop = 1;
+                Speaker Position Angle = 0.000000;
+                Speaker Position Arc = 0.000000;
+
+                Event Header
+                {
+                    Timestamp = 0;
+                    Relative = 0;
+                    Random Recurrence = 0;
+                    Random Offset = 0;
+                }
+
+                Wave Entry
+                {
+                    Bank Name = Wave Bank;
+                    Bank Index = 0;
+                    Entry Name = highway;
+                    Entry Index = 5;
+                    Weight = 255;
+                    Weight Min = 0;
+                }
+            }
+        }
+    }
+
     Cue
     {
         Name = alarm;
@@ -691,6 +762,26 @@ Sound Bank
         {
             Name = swing;
             Index = 4;
+            Weight Min = 0;
+            Weight Max = 255;
+        }
+    }
+
+    Cue
+    {
+        Name = highway;
+
+        Variation
+        {
+            Variation Type = 3;
+            Variation Table Type = 1;
+            New Variation on Loop = 0;
+        }
+
+        Sound Entry
+        {
+            Name = highway;
+            Index = 5;
             Weight Min = 0;
             Weight Max = 255;
         }
