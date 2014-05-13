@@ -71,7 +71,7 @@ struct PlayState {
 	}
 };
 
-enum GameState {PLAY, TITLE, HOWTO, LEVELWIN, GAMEWIN, LEVELLOSE, GAMEOVER, CREDITS, LOADING};
+enum GameState {PLAY, TITLE, HOWTO, LEVELWIN, GAMEWIN, LEVELLOSE, GAMEOVER, CREDITS, LOADING, INTRO, GUN, SWORD, REMINDER, LASTLEVEL, ENDSTORY};
 
 class Game2App : public D3DApp
 {
@@ -212,6 +212,7 @@ private:
 
 	TextureClass titleSplash, controlsSplash, howToSplash, winSplash;
 	TextureClass creditsSplash, loadSplash, gameOverSplash, splashSpecMap;
+	TextureClass storyIntro, storyGun, storySword, storyLastLevel, storyEnd;
 
 
 	ID3D10EffectShaderResourceVariable* mfxDiffuseMapVar;
@@ -264,6 +265,7 @@ private:
 
 	float spotCounter;
 	float timer;
+	bool audioNotStarted;
 
 
 };

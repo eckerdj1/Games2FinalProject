@@ -61,7 +61,7 @@ void Game2App::initApp()
 	playState.level = 1;
 	playState.completedLevel = false;
 	playState.livesRemaining = 3;
-	audio->playCue(MAIN_TRACK);
+	//audio->playCue(MAIN_TRACK);
 
 	srand(time(0));
 	left = Vector3(1,0,0);
@@ -109,6 +109,11 @@ void Game2App::initApp()
 	winSplash.Initialize(md3dDevice, L"Game Win.png");
 	gameOverSplash.Initialize(md3dDevice, L"Game Over Screen.png");
 	splashSpecMap.Initialize(md3dDevice, L"defaultSpec.dds");
+	storyIntro.Initialize(md3dDevice, L"storyIntro.png");
+	storyGun.Initialize(md3dDevice, L"storyGun.png");
+	storySword.Initialize(md3dDevice, L"storySword.png");
+	storyLastLevel.Initialize(md3dDevice, L"storyLastLevel.png");
+	storyEnd.Initialize(md3dDevice, L"storyEnd.png");
 
 	wallDetectionIsOn = true;
 
@@ -126,6 +131,7 @@ void Game2App::initApp()
 	spotCounter = 0.0f;
 
 	timer = 0.0f;
+	audioNotStarted = true;
 
 
 	//init lights - using pointlights
@@ -271,7 +277,7 @@ void Game2App::initApp()
 	teleportGun->addPart("TopBackPanel", "Body", Vector3(0.0f, 1.5f, -1.1f),
 		Vector3(1.1f, 0.1f, 1.0f));
 
-	//player.setWeapon(teleportGun);
+	player.setWeapon(teleportGun);
 	
 	sword = new Weapon();
 	sword->attachBox(blackBox);
@@ -281,7 +287,7 @@ void Game2App::initApp()
 	sword->addPart("Body", "", Vector3(0, 0, 0), swordSize);
 	sword->addPart("CrossBar", "Body", Vector3(0, 2, 0), Vector3(swordSize.x * 2.0f, swordSize.y * .1f, swordSize.z * 4.0f));
 
-	player.setWeapon(sword);
+	//player.setWeapon(sword);
 
 
 	//delete spotLight;
@@ -378,11 +384,58 @@ void Game2App::updateScene(float dt)
 				gameState = LOADING;
 				splashScreenIsUp = true;
 			}
-			else 
-				gameState = PLAY;
-			timer = 0.0f;
+			else {
+				//gameState = PLAY;
+				gameState = INTRO;
+				timer = 0.0f;
+			}
+			//timer = 0.0f;
 		}
 	} 
+	else if (gameState == INTRO) {
+		timer += dt;
+		showSplash();
+		if (audioNotStarted) {
+			audio->playCue(MAIN_TRACK);
+			audioNotStarted = false;
+		}
+		if (timer > 15.0f || keyPressed(AdvanceScreenKey)) {
+			gameState = PLAY;
+			timer = 0.0f;
+		}
+	}
+	else if (gameState == SWORD) {
+		timer += dt;
+		showSplash();
+		if (timer > 10.0f || keyPressed(AdvanceScreenKey)) {
+			gameState = PLAY;
+			timer = 0.0f;
+		}
+	}
+	else if (gameState == GUN) {
+		timer += dt;
+		showSplash();
+		if (timer > 15.0f || keyPressed(AdvanceScreenKey)) {
+			gameState = PLAY;
+			timer = 0.0f;
+		}
+	}
+	else if (gameState == LASTLEVEL) {
+		timer += dt;
+		showSplash();
+		if (timer > 10.0f || keyPressed(AdvanceScreenKey)) {
+			gameState = PLAY;
+			timer = 0.0f;
+		}
+	}
+	else if (gameState == ENDSTORY) {
+		timer += dt;
+		showSplash();
+		if (timer > 10.0f || keyPressed(AdvanceScreenKey)) {
+			gameState = CREDITS;
+			timer = 0.0f;
+		}
+	}
 	else if (gameState == LEVELWIN) 
 	{
 		showSplash();
@@ -428,8 +481,20 @@ void Game2App::updateScene(float dt)
 				gameState = LOADING;
 				splashScreenIsUp = true;
 			}
-			else 
-				gameState = PLAY;
+			else {
+				if (playState.level == 3) {
+					timer = 0.0f;
+					gameState = SWORD;
+				} else if (playState.level == 5) {
+					timer = 0.0f;
+					gameState = GUN;
+				} else if (playState.level == 6) {
+					timer = 0.0f;
+					gameState = LASTLEVEL;
+				} else {
+					gameState = PLAY;
+				}
+			}
 		}
 	}
 	else if (gameState == GAMEWIN) 
@@ -439,7 +504,7 @@ void Game2App::updateScene(float dt)
 		if (timer > 5.0f || keyPressed(AdvanceScreenKey))
 		{
 			timer = 0.0f;
-			gameState = CREDITS;
+			gameState = ENDSTORY;
 		}
 	}
 	else if (gameState == GAMEOVER) 
@@ -593,7 +658,22 @@ void Game2App::updateScene(float dt)
 		playState.pickUpsRemaining = level->pickups.size();
 		player.setPosition(level->playerLoc * level->enlargeByC);
 		
-		gameState = PLAY;
+		if (playState.level == 1) {
+			gameState = INTRO;
+			timer = 0.0f;
+		} else if (playState.level == 3) {
+			gameState = SWORD;
+			timer = 0.0f;
+		} else if (playState.level == 5) {
+			gameState = GUN;
+			timer = 0.0f;
+		} else if (playState.level == 6) {
+			gameState = LASTLEVEL;
+			timer = 0.0f;
+		} else {
+			gameState = PLAY;
+			timer = 0.0f;
+		}
 	}
 	else if (gameState == PLAY) 
 	{
@@ -976,6 +1056,21 @@ void Game2App::drawScene()
 	if (gameState == HOWTO)
 	{
 		mfxDiffuseMapVar->SetResource(howToSplash.GetTexture());
+	}
+	if (gameState == INTRO) {
+		mfxDiffuseMapVar->SetResource(storyIntro.GetTexture());
+	}
+	if (gameState == SWORD) {
+		mfxDiffuseMapVar->SetResource(storySword.GetTexture());
+	}
+	if (gameState == GUN) {
+		mfxDiffuseMapVar->SetResource(storyGun.GetTexture());
+	}
+	if (gameState == LASTLEVEL) {
+		mfxDiffuseMapVar->SetResource(storyLastLevel.GetTexture());
+	}
+	if (gameState == ENDSTORY) {
+		mfxDiffuseMapVar->SetResource(storyEnd.GetTexture());
 	}
 		//Identity(&mVP);
 	if (gameState != PLAY)
