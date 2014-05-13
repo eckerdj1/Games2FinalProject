@@ -71,6 +71,8 @@ public:
 	bool swingingSword;
 
 	void setLevel(Level* _level) {level = _level;}
+	
+	bool noWalls(Vector3 jumpDir);
 
 
 private:

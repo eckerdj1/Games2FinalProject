@@ -107,6 +107,7 @@
     <ClCompile Include="Pickup.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="RayBox.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="textureclass.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Pickup.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="RayBox.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Score.h" />

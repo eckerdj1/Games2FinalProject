@@ -123,7 +123,6 @@ void Level::fillLevel(string s) {
 		// walls
 		float x1, x2, z1, z2, b;
 		fin >> x1 >> z1 >> x2 >> z2 >> b;
-		isThick = b;
 		float xLength = x2 - x1;
 		if (xLength < 0) {
 			xLength *= -1;
@@ -146,6 +145,7 @@ void Level::fillLevel(string s) {
 		wall = new Wall;
 		wall->attachBox(wallBox);
 		wall->init(md3dDevice, position, Vector3(xLength, 20.0f, zLength), Blue);
+		wall->isThick = b;
 		walls.push_back(*wall);
 		delete wall;
 	}

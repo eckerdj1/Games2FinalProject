@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Game2App.h"
 #include "Level.h"
+#include "RayBox.h"
 
 Player::Player()
 {
@@ -247,7 +248,7 @@ void Player::update(float dt)
 		teleportLight->pos = position + jumpDir;
 		teleportLight->pos.y = 25.0f;
 
-		if (input->getMouseLButton() && !onCooldown)
+		if (input->getMouseLButton() && !onCooldown && noWalls(jumpDir))
 		{
 			position += jumpDir;
 			for (int i=0; i<perimeter.size(); ++i)
@@ -675,4 +676,21 @@ void Player::setCollisionPoint(Vector3 p)
 		collisionPoint += p;
 		collisionPoint /= 2.0f;
 	}
+}
+
+bool Player::noWalls(Vector3 jumpDir)
+{
+	for (int i=0; i<level->walls.size(); ++i)
+	{
+		Wall w = level->walls[i];
+		Ray r = Ray(position, jumpDir);
+		Box2 b(w.getPosition() - Vector3(w.getRadii().x, 0.0f, w.getRadii().z),
+							w.getPosition() + Vector3(w.getRadii().x, w.getSize().y, w.getRadii().z));
+		if (b.intersect(r, 0.0f, 1.0f))
+		{
+			if (w.isThick)
+				return false;
+		}
+	}
+	return true;
 }

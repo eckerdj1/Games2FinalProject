@@ -45,6 +45,8 @@ public:
 	void draw();
 
 	void attachBox(Box*);
+	
+	bool isThick;
 
 private:
 
