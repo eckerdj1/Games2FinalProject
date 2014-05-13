@@ -32,6 +32,13 @@ public:
 	void addPathPoint(Vector3 p) {aiPath.push_back(p);}
 	float getRange() {return range;}
 
+	void setActive() {active = true;}
+	void setInactive() {active = false;}
+	bool isActive() {return active;}
+	void turnOffLight();
+
+	void reset();
+
 private:
 	string name;
 	BodyPart* torso;
@@ -74,4 +81,5 @@ private:
 	vector<Vector3> aiPath;
 	int pathIndex;
 	int pathDir;
+	bool active;
 };

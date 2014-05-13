@@ -334,4 +334,6 @@ void Level::reset()
 {
 	for (int i=0; i<pickups.size(); ++i)
 		pickups[i].setActive();
+	for (int i=0; i<enemies.size(); ++i)
+		enemies[i]->reset();
 }

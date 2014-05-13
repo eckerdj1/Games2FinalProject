@@ -277,7 +277,7 @@ void Game2App::initApp()
 	teleportGun->addPart("TopBackPanel", "Body", Vector3(0.0f, 1.5f, -1.1f),
 		Vector3(1.1f, 0.1f, 1.0f));
 
-	player.setWeapon(teleportGun);
+	//player.setWeapon(teleportGun);
 	
 	sword = new Weapon();
 	sword->attachBox(blackBox);
@@ -341,8 +341,9 @@ void Game2App::updateScene(float dt)
 		camPos = splashCamPos;
 
 		
-		if (gameTime > 7.0f || keyPressed(AdvanceScreenKey))
+		if (gameTime > 7.0f || input->wasKeyPressed(AdvanceScreenKey))
 			gameState = HOWTO;
+		playState.level = 1;
 	}
 	else if (gameState == HOWTO) 
 	{
@@ -350,7 +351,7 @@ void Game2App::updateScene(float dt)
 		showSplash();
 		timer += dt;
 		bool toLoading = false;
-		if (timer > 15.0f || keyPressed(AdvanceScreenKey))
+		if (timer > 15.0f || input->wasKeyPressed(AdvanceScreenKey))
 		{
 			switch(playState.level)
 			{
@@ -399,7 +400,7 @@ void Game2App::updateScene(float dt)
 			audio->playCue(MAIN_TRACK);
 			audioNotStarted = false;
 		}
-		if (timer > 15.0f || keyPressed(AdvanceScreenKey)) {
+		if (timer > 15.0f || input->wasKeyPressed(AdvanceScreenKey)) {
 			gameState = PLAY;
 			timer = 0.0f;
 		}
@@ -407,7 +408,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == SWORD) {
 		timer += dt;
 		showSplash();
-		if (timer > 10.0f || keyPressed(AdvanceScreenKey)) {
+		if (timer > 10.0f || input->wasKeyPressed(AdvanceScreenKey)) {
 			gameState = PLAY;
 			timer = 0.0f;
 		}
@@ -415,7 +416,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == GUN) {
 		timer += dt;
 		showSplash();
-		if (timer > 15.0f || keyPressed(AdvanceScreenKey)) {
+		if (timer > 15.0f || input->wasKeyPressed(AdvanceScreenKey)) {
 			gameState = PLAY;
 			timer = 0.0f;
 		}
@@ -423,7 +424,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == LASTLEVEL) {
 		timer += dt;
 		showSplash();
-		if (timer > 10.0f || keyPressed(AdvanceScreenKey)) {
+		if (timer > 10.0f || input->wasKeyPressed(AdvanceScreenKey)) {
 			gameState = PLAY;
 			timer = 0.0f;
 		}
@@ -431,7 +432,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == ENDSTORY) {
 		timer += dt;
 		showSplash();
-		if (timer > 10.0f || keyPressed(AdvanceScreenKey)) {
+		if (timer > 10.0f || input->wasKeyPressed(AdvanceScreenKey)) {
 			gameState = CREDITS;
 			timer = 0.0f;
 		}
@@ -534,7 +535,7 @@ void Game2App::updateScene(float dt)
 	else if (gameState == LOADING)
 	{
 		showSplash();
-		playState.level = 6;
+		playState.level = 5;
 		if (playState.level == 1)
 		{
 			if (!level1)
@@ -624,17 +625,17 @@ void Game2App::updateScene(float dt)
 		player.setPosition(level->playerLoc * level->enlargeByC);
 		
 		if (playState.level == 1) {
+			timer = 0.0f;
 			gameState = INTRO;
-			timer = 0.0f;
 		} else if (playState.level == 3) {
+			timer = 0.0f;
 			gameState = SWORD;
-			timer = 0.0f;
 		} else if (playState.level == 5) {
+			timer = 0.0f;
 			gameState = GUN;
-			timer = 0.0f;
 		} else if (playState.level == 6) {
-			gameState = LASTLEVEL;
 			timer = 0.0f;
+			gameState = LASTLEVEL;
 		} else {
 			gameState = PLAY;
 			timer = 0.0f;
@@ -648,6 +649,7 @@ void Game2App::updateScene(float dt)
 			switch(playState.level)
 			{
 			case 1:
+				player.setWeapon(NULL);
 				level = level1;
 				break;
 			case 2:
@@ -655,11 +657,13 @@ void Game2App::updateScene(float dt)
 				break;
 			case 3:
 				level = level3;
+				player.setWeapon(sword);
 				break;
 			case 4:
 				level = level4;
 				break;
 			case 5:
+				player.setWeapon(teleportGun);
 				level = level5;
 				break;
 			case 6:
@@ -667,6 +671,7 @@ void Game2App::updateScene(float dt)
 				break;
 			}
 			level->reset();
+			player.setLevel(level);
 			numberOfSpotLights = level->spotLights.size();
 			mfxSpotCount->SetInt(numberOfSpotLights);
 			player.setPosition(level->playerLoc * level->enlargeByC);
@@ -685,6 +690,8 @@ void Game2App::updateScene(float dt)
 		for (int i=0; i<level->enemies.size(); ++i)
 		{
 			Enemy* e = level->enemies[i];
+			if (!e->isActive())
+				continue;
 			Vector3 toPlayer = e->getPosition() - player.getPosition();
 			Vector3 norm;
 			Normalize(&norm, &(-toPlayer));
@@ -1083,6 +1090,8 @@ void Game2App::drawScene()
 		//	Charge bar
 		mfxDiffuseMapVarHud->SetResource(teleChargeTex.GetTexture());
 		teleCharge.setScaleX((player.teleportChargeCounter / player.teleportChargeTime) * 2.0f);
+		if (player.weapon && player.weapon->getName() == "Sword")
+			teleCharge.setScaleX((player.stamina / player.maxStamina) * 2.0f);
 		mfxTexMtxVarHud->SetMatrix((float*)&texMtx);
 		for(UINT p = 0; p < techDescHud.Passes; ++p)
 		{

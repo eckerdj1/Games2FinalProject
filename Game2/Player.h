@@ -18,6 +18,7 @@ using std::string;
 class BodyPart;
 class Body;
 class Game2App;
+class Level;
 
 class Player : public Body {
 public:
@@ -62,8 +63,14 @@ public:
 	float teleportChargeTime;
 	float teleportRangeMax;
 	bool teleportCharged;
+	float stamina;
+	float maxStamina;
+	bool hasStamina;
 
 	Weapon* weapon;
+	bool swingingSword;
+
+	void setLevel(Level* _level) {level = _level;}
 
 
 private:
@@ -106,6 +113,8 @@ private:
 	ID3D10Device* device;
 	ID3D10EffectVariable* mfxLightVar;
 	Input* input;
+
+	Level* level;
 
 };
 
